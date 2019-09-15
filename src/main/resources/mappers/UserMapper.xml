@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wht.blog.dao.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.wht.blog.entity.User" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="username" property="username" jdbcType="VARCHAR" />
+    <result column="password_md5" property="passwordMd5" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="screen_name" property="screenName" jdbcType="VARCHAR" />
+    <result column="created" property="created" jdbcType="TIMESTAMP" />
+    <result column="logged" property="logged" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, username, email, screen_name, created, logged
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from yonghu
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="getAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from yonghu
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from yonghu
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.wht.blog.entity.User" >
+    insert into yonghu (id, username, password_md5, 
+      email, screen_name, created, 
+      logged)
+    values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{passwordMd5,jdbcType=VARCHAR}, 
+      #{email,jdbcType=VARCHAR}, #{screenName,jdbcType=VARCHAR}, #{created,jdbcType=TIMESTAMP}, 
+      #{logged,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wht.blog.entity.User" >
+    insert into yonghu
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="username != null" >
+        username,
+      </if>
+      <if test="passwordMd5 != null" >
+        password_md5,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="screenName != null" >
+        screen_name,
+      </if>
+      <if test="created != null" >
+        created,
+      </if>
+      <if test="logged != null" >
+        logged,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="username != null" >
+        #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="passwordMd5 != null" >
+        #{passwordMd5,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="screenName != null" >
+        #{screenName,jdbcType=VARCHAR},
+      </if>
+      <if test="created != null" >
+        #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="logged != null" >
+        #{logged,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wht.blog.entity.User" >
+    update yonghu
+    <set >
+      <if test="username != null" >
+        username = #{username,jdbcType=VARCHAR},
+      </if>
+      <if test="passwordMd5 != null" >
+        password_md5 = #{passwordMd5,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="screenName != null" >
+        screen_name = #{screenName,jdbcType=VARCHAR},
+      </if>
+      <if test="created != null" >
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="logged != null" >
+        logged = #{logged,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wht.blog.entity.User" >
+    update yonghu
+    set username = #{username,jdbcType=VARCHAR},
+      password_md5 = #{passwordMd5,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      screen_name = #{screenName,jdbcType=VARCHAR},
+      created = #{created,jdbcType=TIMESTAMP},
+      logged = #{logged,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

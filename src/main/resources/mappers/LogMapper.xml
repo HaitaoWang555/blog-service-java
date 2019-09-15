@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wht.blog.dao.LogMapper" >
+  <resultMap id="BaseResultMap" type="com.wht.blog.entity.Log" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="action" property="action" jdbcType="VARCHAR" />
+    <result column="message" property="message" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="created" property="created" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.wht.blog.entity.Log" extends="BaseResultMap" >
+    <result column="data" property="data" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, action, message, type, ip, user_id, created
+  </sql>
+  <sql id="Blob_Column_List" >
+    data
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.wht.blog.entity.Log" >
+    insert into log (id, action, message, 
+      type, ip, user_id, created, 
+      data)
+    values (#{id,jdbcType=INTEGER}, #{action,jdbcType=VARCHAR}, #{message,jdbcType=VARCHAR}, 
+      #{type,jdbcType=VARCHAR}, #{ip,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{created,jdbcType=TIMESTAMP}, 
+      #{data,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wht.blog.entity.Log" >
+    insert into log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="action != null" >
+        action,
+      </if>
+      <if test="message != null" >
+        message,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="ip != null" >
+        ip,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="created != null" >
+        created,
+      </if>
+      <if test="data != null" >
+        data,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="action != null" >
+        #{action,jdbcType=VARCHAR},
+      </if>
+      <if test="message != null" >
+        #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="created != null" >
+        #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="data != null" >
+        #{data,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wht.blog.entity.Log" >
+    update log
+    <set >
+      <if test="action != null" >
+        action = #{action,jdbcType=VARCHAR},
+      </if>
+      <if test="message != null" >
+        message = #{message,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null" >
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="created != null" >
+        created = #{created,jdbcType=TIMESTAMP},
+      </if>
+      <if test="data != null" >
+        data = #{data,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.wht.blog.entity.Log" >
+    update log
+    set action = #{action,jdbcType=VARCHAR},
+      message = #{message,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      ip = #{ip,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=INTEGER},
+      created = #{created,jdbcType=TIMESTAMP},
+      data = #{data,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wht.blog.entity.Log" >
+    update log
+    set action = #{action,jdbcType=VARCHAR},
+      message = #{message,jdbcType=VARCHAR},
+      type = #{type,jdbcType=VARCHAR},
+      ip = #{ip,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=INTEGER},
+      created = #{created,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
