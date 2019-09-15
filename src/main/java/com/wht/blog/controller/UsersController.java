@@ -2,37 +2,33 @@ package com.wht.blog.controller;
 
 import com.wht.blog.entity.User;
 import com.wht.blog.service.UsersService;
-import org.springframework.stereotype.Controller;
+import com.wht.blog.util.RestResponse;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Date;
-import java.util.List;
 /**
  * @author wht
  * @since 2019-09-13 12:51
  */
-@Controller
+@RestController
 public class UsersController {
     @Resource
     private UsersService usersService;
 
     @GetMapping("/user")
-    @ResponseBody
-    public List getAllUser() {
-        return usersService.getAllUser();
+    public RestResponse getAllUser() {
+        return RestResponse.ok(usersService.getAllUser());
     }
 
     @GetMapping("/getOneById")
-    @ResponseBody
-    public User getOneById(@RequestParam(value = "id") Integer id) {
-        return usersService.getOneById(id);
+    public RestResponse getOneById(@RequestParam(value = "id") Integer id) {
+        return RestResponse.ok(usersService.getOneById(id));
     }
 
     @PostMapping("/addUser")
-    @ResponseBody
-    public int addUser(
+    public RestResponse addUser(
             @RequestParam(value = "username") String username,
             @RequestParam(value = "password") String password_md5,
             @RequestParam(value = "email") String email,
@@ -46,12 +42,12 @@ public class UsersController {
         user.setLogged(new Date());
 
         user.setCreated(new Date());
-        return usersService.addUser(user);
+        usersService.addUser(user);
+        return RestResponse.ok("添加成功");
     }
 
     @PostMapping("/updateUser")
-    @ResponseBody
-    public int updateUser(
+    public RestResponse updateUser(
             @RequestParam(value = "id") Integer id,
             @RequestParam(value = "username", required = false) String username,
             @RequestParam(value = "email", required = false) String email,
@@ -64,15 +60,16 @@ public class UsersController {
         if (!StringUtils.isEmpty(screen_name)) user.setScreenName(screen_name);
         user.setLogged(new Date());
 
-        return usersService.updateByPrimaryKeySelective(user);
+        usersService.updateByPrimaryKeySelective(user);
+        return RestResponse.ok("更新成功");
     }
 
 
 
     @DeleteMapping("/delUser")
-    @ResponseBody
-    public int delUser(@RequestParam(value = "id") int id) {
-        return usersService.delUser(id);
+    public RestResponse delUser(@RequestParam(value = "id") int id) {
+        usersService.delUser(id);
+        return RestResponse.ok("删除成功");
     }
 
 }
