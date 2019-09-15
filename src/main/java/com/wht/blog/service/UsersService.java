@@ -4,6 +4,7 @@ import com.wht.blog.dao.UserMapper;
 import com.wht.blog.entity.User;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -12,11 +13,9 @@ import java.util.List;
  */
 @Service
 public class UsersService {
-    private final UserMapper userMapper;
+    @Resource
+    private UserMapper userMapper;
 
-    public UsersService(UserMapper userMapper) {
-        this.userMapper = userMapper;
-    }
 
     public List getAllUser () {
         return userMapper.getAll();

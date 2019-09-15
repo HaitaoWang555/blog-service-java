@@ -1,11 +1,9 @@
 package com.wht.blog.dao;
 
 import com.wht.blog.entity.User;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public interface UserMapper {
     int deleteByPrimaryKey(Integer id);
 

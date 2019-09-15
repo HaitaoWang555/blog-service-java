@@ -6,22 +6,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.inject.Inject;
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
-
 /**
  * @author wht
  * @since 2019-09-13 12:51
  */
 @Controller
 public class UsersController {
-    private final UsersService usersService;
-
-    @Inject
-    public UsersController(UsersService usersService) {
-        this.usersService = usersService;
-    }
+    @Resource
+    private UsersService usersService;
 
     @GetMapping("/user")
     @ResponseBody
