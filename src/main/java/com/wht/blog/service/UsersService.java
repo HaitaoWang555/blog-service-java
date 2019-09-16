@@ -23,16 +23,16 @@ public class UsersService {
     public User getOneById (int id) {
         return userMapper.selectByPrimaryKey(id);
     }
-    public int addUser (User user) {
-        return userMapper.insert(user);
+    public void addUser (User user) {
+        userMapper.insert(user);
     }
 
-    public int updateByPrimaryKeySelective (User user) {
-        return userMapper.updateByPrimaryKeySelective(user);
+    public void updateByPrimaryKeySelective (User user) {
+        userMapper.updateByPrimaryKeySelective(user);
     }
 
-    public int delUser (Integer id) {
-        return userMapper.deleteByPrimaryKey(id);
+    public void delUser (Integer id) {
+        userMapper.deleteByPrimaryKey(id);
     }
 
 }

@@ -3,7 +3,7 @@ package com.wht.blog.controller;
 import com.wht.blog.entity.User;
 import com.wht.blog.service.UsersService;
 import com.wht.blog.util.RestResponse;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -55,9 +55,9 @@ public class UsersController {
     ) {
         User user = new User();
         user.setId(id);
-        if (!StringUtils.isEmpty(username)) user.setUsername(username);
-        if (!StringUtils.isEmpty(email)) user.setEmail(email);
-        if (!StringUtils.isEmpty(screen_name)) user.setScreenName(screen_name);
+        if (StringUtils.isNotBlank(username)) user.setUsername(StringUtils.trim(username));
+        if (StringUtils.isNotBlank(email)) user.setEmail(email);
+        if (StringUtils.isNotBlank(screen_name)) user.setScreenName(screen_name);
         user.setLogged(new Date());
 
         usersService.updateByPrimaryKeySelective(user);
