@@ -2,6 +2,8 @@ package com.wht.blog.dao;
 
 import com.wht.blog.entity.Meta;
 
+import java.util.List;
+
 public interface MetaMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -14,4 +16,6 @@ public interface MetaMapper {
     int updateByPrimaryKeySelective(Meta record);
 
     int updateByPrimaryKey(Meta record);
+
+    List getAll();
 }
