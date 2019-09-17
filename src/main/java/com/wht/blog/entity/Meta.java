@@ -9,4 +9,6 @@ public class Meta {
     private String name;
 
     private String type;
+    private String color;
+    private String textColor;
 }

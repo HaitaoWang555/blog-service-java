@@ -35,7 +35,7 @@ public class UsersController {
             @RequestParam(value = "screenName", required = false) String screen_name
     ) {
         User user = new User();
-        user.setUsername(username);
+        user.setUsername(StringUtils.trim(username));
         user.setEmail(email);
         user.setScreenName(screen_name);
         user.setPasswordMd5(password_md5);
