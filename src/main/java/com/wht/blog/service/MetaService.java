@@ -20,11 +20,17 @@ public class MetaService {
     public List getAll () {
         return metaMapper.getAll();
     }
+    public List search(String name, String type) {
+        return metaMapper.search(name, type);
+    }
     public Meta getOneById (int id) {
         return metaMapper.selectByPrimaryKey(id);
     }
     public void add (Meta meta) {
         metaMapper.insert(meta);
+    }
+    public void insertSelective (Meta meta) {
+        metaMapper.insertSelective(meta);
     }
 
     public void updateByPrimaryKeySelective (Meta meta) {

@@ -18,4 +18,5 @@ public interface MetaMapper {
     int updateByPrimaryKey(Meta record);
 
     List getAll();
+    List search(String name, String type);
 }

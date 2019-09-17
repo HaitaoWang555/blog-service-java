@@ -5,12 +5,14 @@
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="color" property="color" jdbcType="VARCHAR" />
+    <result column="text_color" property="textColor" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, name, type
+    id, name, type, color, text_color
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
+    select
     <include refid="Base_Column_List" />
     from meta
     where id = #{id,jdbcType=INTEGER}
@@ -18,17 +20,28 @@
   <select id="getAll" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" /> from meta
   </select>
+  <select id="search" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from meta
+    <where>
+      <if test="name!=null">
+        and name like concat('%',#{name},'%')
+      </if>
+      <if test="type!=null">
+        and type = #{type,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from meta
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.wht.blog.entity.Meta" >
-    insert into meta (id, name, type
-      )
-    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}
-      )
+    insert into meta (id, name, type,
+                      color, text_color)
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
+            #{color,jdbcType=VARCHAR}, #{textColor,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.wht.blog.entity.Meta" >
+  <insert id="insertSelective" parameterType="com.wht.blog.entity.Meta" useGeneratedKeys="true" keyProperty="id" >
     insert into meta
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -39,6 +52,12 @@
       </if>
       <if test="type != null" >
         type,
+      </if>
+      <if test="color != null" >
+        color,
+      </if>
+      <if test="textColor != null" >
+        text_color,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
@@ -51,9 +70,15 @@
       <if test="type != null" >
         #{type,jdbcType=VARCHAR},
       </if>
+      <if test="color != null" >
+        #{color,jdbcType=VARCHAR},
+      </if>
+      <if test="textColor != null" >
+        #{textColor,jdbcType=VARCHAR},
+      </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.wht.blog.entity.Meta" >
+  <update id="updateByPrimaryKeySelective" parameterType="com.wht.blog.entity.Meta">
     update meta
     <set >
       <if test="name != null" >
@@ -62,13 +87,21 @@
       <if test="type != null" >
         type = #{type,jdbcType=VARCHAR},
       </if>
+      <if test="color != null" >
+        color = #{color,jdbcType=VARCHAR},
+      </if>
+      <if test="textColor != null" >
+        text_color = #{textColor,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.wht.blog.entity.Meta" >
     update meta
     set name = #{name,jdbcType=VARCHAR},
-      type = #{type,jdbcType=VARCHAR}
+        type = #{type,jdbcType=VARCHAR},
+        color = #{color,jdbcType=VARCHAR},
+        text_color = #{textColor,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>
