@@ -1,12 +1,12 @@
 package com.wht.blog.service;
 
-import com.github.pagehelper.Page;
 import com.wht.blog.dao.MetaMapper;
 import com.wht.blog.entity.Meta;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author wht
@@ -18,17 +18,14 @@ public class MetaService {
     private MetaMapper metaMapper;
 
 
-    public Page<Meta> getAll (Integer page,Integer limit) {
-        return metaMapper.getAll(page, limit);
+    public List getAll () {
+        return metaMapper.getAll();
     }
     public List search(String name, String type) {
         return metaMapper.search(name, type);
     }
     public Meta getOneById (int id) {
         return metaMapper.selectByPrimaryKey(id);
-    }
-    public void add (Meta meta) {
-        metaMapper.insert(meta);
     }
     public void insertSelective (Meta meta) {
         metaMapper.insertSelective(meta);
@@ -38,7 +35,7 @@ public class MetaService {
         metaMapper.updateByPrimaryKeySelective(meta);
     }
 
-    public void del (Integer id) {
-        metaMapper.deleteByPrimaryKey(id);
+    public void del (Map ids) {
+        metaMapper.deleteByPrimaryKeyBatch(ids);
     }
 }

@@ -1,12 +1,13 @@
 package com.wht.blog.dao;
 
-import com.github.pagehelper.Page;
 import com.wht.blog.entity.Meta;
 
 import java.util.List;
+import java.util.Map;
+
 
 public interface MetaMapper {
-    int deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKeyBatch(Map ids);
 
     int insert(Meta record);
 
@@ -18,6 +19,6 @@ public interface MetaMapper {
 
     int updateByPrimaryKey(Meta record);
 
-    Page<Meta> getAll(Integer page,Integer limit);
+    List getAll();
     List search(String name, String type);
 }

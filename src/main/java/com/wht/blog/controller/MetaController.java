@@ -11,6 +11,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 属性(标签和分类)管理 Controller
@@ -26,28 +29,26 @@ public class MetaController extends BaseController {
     private MetaService metaService;
 
     @GetMapping("/list")
-    public RestResponse list(
-            @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-            @RequestParam(value = "pageSize", required = false, defaultValue = Consts.PAGE_SIZE) Integer limit
-    ) {
-        Page<Meta> meta = PageHelper.startPage(page, limit).doSelectPage(() ->
-                metaService.getAll(page, limit)
-        );
-        return RestResponse.ok(new Pagination<Meta>(meta));
-    }
-
-    @GetMapping("/searchList")
     public RestResponse searchList(
             @RequestParam(value = "id", required = false) Integer id,
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "type", required = false) String type
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "sortBy", required = false, defaultValue = "updated_at desc") String sortBy,
+            @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+            @RequestParam(value = "pageSize", required = false, defaultValue = Consts.PAGE_SIZE) Integer limit
     ) {
         if (!StringUtils.isEmpty(id)) {
             return RestResponse.ok(metaService.getOneById(id));
         } else if (!StringUtils.isEmpty(name) || !StringUtils.isEmpty(type)) {
-            return RestResponse.ok(metaService.search(name, type));
+            Page<Meta> meta = PageHelper.startPage(page, limit, sortBy).doSelectPage(() ->
+                    metaService.search(name, type)
+            );
+            return RestResponse.ok(new Pagination<Meta>(meta));
         } else {
-            return RestResponse.fail(1,"无效参数");
+            Page<Meta> meta = PageHelper.startPage(page, limit, sortBy).doSelectPage(() ->
+                    metaService.getAll()
+            );
+            return RestResponse.ok(new Pagination<Meta>(meta));
         }
     }
 
@@ -83,13 +84,19 @@ public class MetaController extends BaseController {
         meta.setColor(color);
         meta.setTextColor(text_color);
 
+        meta.setUpdatedAt(new Date());
+
         metaService.updateByPrimaryKeySelective(meta);
         return RestResponse.ok("更新成功");
     }
 
     @DeleteMapping("/delete")
-    public RestResponse delUser(@RequestParam(value = "id") int id) {
-        metaService.del(id);
+    public RestResponse delUser(
+            @RequestParam(value = "ids") String ids
+    ) {
+        Map<String, String> map = new HashMap<>();
+        map.put("ids", ids);
+        metaService.del(map);
         return RestResponse.ok("删除成功");
     }
 
