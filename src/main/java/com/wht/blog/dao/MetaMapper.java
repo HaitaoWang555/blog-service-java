@@ -3,9 +3,11 @@ package com.wht.blog.dao;
 import com.wht.blog.entity.Meta;
 
 import java.util.List;
+import java.util.Map;
+
 
 public interface MetaMapper {
-    int deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKeyBatch(Map ids);
 
     int insert(Meta record);
 
