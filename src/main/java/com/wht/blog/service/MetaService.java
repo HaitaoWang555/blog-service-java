@@ -1,5 +1,6 @@
 package com.wht.blog.service;
 
+import com.github.pagehelper.Page;
 import com.wht.blog.dao.MetaMapper;
 import com.wht.blog.entity.Meta;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,8 @@ public class MetaService {
     private MetaMapper metaMapper;
 
 
-    public List getAll () {
-        return metaMapper.getAll();
+    public Page<Meta> getAll (Integer page,Integer limit) {
+        return metaMapper.getAll(page, limit);
     }
     public List search(String name, String type) {
         return metaMapper.search(name, type);

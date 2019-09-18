@@ -1,7 +1,11 @@
 package com.wht.blog.controller;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.wht.blog.dto.Pagination;
 import com.wht.blog.entity.Meta;
 import com.wht.blog.service.MetaService;
+import com.wht.blog.util.Consts;
 import com.wht.blog.util.RestResponse;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +26,18 @@ public class MetaController extends BaseController {
     private MetaService metaService;
 
     @GetMapping("/list")
-    public RestResponse list() {
-        return RestResponse.ok(metaService.getAll());
+    public RestResponse list(
+            @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+            @RequestParam(value = "pageSize", required = false, defaultValue = Consts.PAGE_SIZE) Integer limit
+    ) {
+        Page<Meta> meta = PageHelper.startPage(page, limit).doSelectPage(() ->
+                metaService.getAll(page, limit)
+        );
+        return RestResponse.ok(new Pagination<Meta>(meta));
     }
 
-    @GetMapping("getOne")
-    public RestResponse getOne(
+    @GetMapping("/searchList")
+    public RestResponse searchList(
             @RequestParam(value = "id", required = false) Integer id,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "type", required = false) String type
