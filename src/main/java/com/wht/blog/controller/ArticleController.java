@@ -8,7 +8,8 @@ import com.wht.blog.service.ArticleService;
 import com.wht.blog.util.Consts;
 import com.wht.blog.util.RestResponse;
 import com.wht.blog.util.Types;
-import org.springframework.util.StringUtils;
+//import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -30,15 +31,21 @@ public class ArticleController extends BaseController{
     public RestResponse searchList(
             @RequestParam(value = "id", required = false) Integer id,
             @RequestParam(value = "title", required = false) String title,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "authorId", required = false) Integer authorId,
+            @RequestParam(value = "tags", required = false) String tags,
+            @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "sortBy", required = false, defaultValue = "updated_at desc") String sortBy,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", required = false, defaultValue = Consts.PAGE_SIZE) Integer limit
     ) {
-        if (!StringUtils.isEmpty(id)) {
+
+        if (id!=null) {
             return RestResponse.ok(articleService.getOneById(id));
-        } else if (!StringUtils.isEmpty(title)) {
+        } else if (!StringUtils.isAllBlank(title, status, type, tags, category) || authorId!=null) {
             Page<Article> article = PageHelper.startPage(page, limit, sortBy).doSelectPage(() ->
-                    articleService.search(title)
+                    articleService.search(title, status, type, authorId)
             );
             return RestResponse.ok(new Pagination<Article>(article));
         } else {
@@ -56,6 +63,7 @@ public class ArticleController extends BaseController{
             @RequestParam(value = "tags") String tags,
             @RequestParam(value = "category") String category,
             @RequestParam(value = "status", defaultValue = Types.DRAFT) String status,
+            @RequestParam(value = "type", defaultValue = Types.POST) String type,
             @RequestParam(value = "allowComment", defaultValue = "false") Boolean allowComment
     ) {
         Article article = new Article();
@@ -64,10 +72,11 @@ public class ArticleController extends BaseController{
         article.setTags(tags);
         article.setCategory(category);
         article.setStatus(status);
+        article.setType(type);
         article.setAllowComment(allowComment);
 
         articleService.insertSelective(article);
-        return RestResponse.ok(article, 0, "添加成功");
+        return RestResponse.ok("添加成功");
     }
 
     @PostMapping("/update")
@@ -78,6 +87,7 @@ public class ArticleController extends BaseController{
             @RequestParam(value = "tags", required = false) String tags,
             @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "allowComment", required = false) Boolean allowComment
     ) {
         Article article = new Article();
@@ -87,11 +97,12 @@ public class ArticleController extends BaseController{
         article.setTags(tags);
         article.setCategory(category);
         article.setStatus(status);
+        article.setType(type);
         article.setAllowComment(allowComment);
         article.setUpdatedAt(new Date());
 
         articleService.updateByPrimaryKeySelective(article);
-        return RestResponse.ok(article, 0, "更新成功");
+        return RestResponse.ok("更新成功");
     }
 
     @DeleteMapping("/delete")

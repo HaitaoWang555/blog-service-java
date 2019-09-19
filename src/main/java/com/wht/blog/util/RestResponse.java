@@ -62,6 +62,9 @@ public class RestResponse<T> {
     }
 
     public static <T> RestResponse ok(T data) {
+        if (data == null) {
+            return new RestResponse<>(true, "暂无数据");
+        }
         return new RestResponse<>(true, data);
     }
 

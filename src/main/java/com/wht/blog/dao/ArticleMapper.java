@@ -19,5 +19,10 @@ public interface ArticleMapper {
 
     int updateByPrimaryKey(Article record);
     List getAll();
-    List search(@Param("title")String title);
+    List search(
+            @Param("title")String title,
+            @Param("status")String status,
+            @Param("type")String type,
+            @Param("authorId")Integer authorId
+    );
 }

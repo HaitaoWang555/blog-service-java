@@ -2,9 +2,12 @@ package com.wht.blog.service;
 
 import com.wht.blog.dao.ArticleMapper;
 import com.wht.blog.entity.Article;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,8 +29,8 @@ public class ArticleService {
     public List getAll() {
         return articleMapper.getAll();
     }
-    public List search(String title) {
-        return articleMapper.search(title);
+    public List search(String title, String status,String type,Integer authorId) {
+        return articleMapper.search(title, status, type, authorId);
     }
 
     public int insertSelective (Article article) {
