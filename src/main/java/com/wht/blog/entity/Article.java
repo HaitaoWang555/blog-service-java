@@ -10,9 +10,9 @@ public class Article {
 
     private String title;
 
-    private Date created;
+    private Date createdAt;
 
-    private Date modified;
+    private Date updatedAt;
 
     private Integer authorId;
 

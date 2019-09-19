@@ -1,6 +1,7 @@
 package com.wht.blog.dao;
 
 import com.wht.blog.entity.Meta;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -20,5 +21,5 @@ public interface MetaMapper {
     int updateByPrimaryKey(Meta record);
 
     List getAll();
-    List search(String name, String type);
+    List search(@Param("name")String name, @Param("type")String type);
 }
