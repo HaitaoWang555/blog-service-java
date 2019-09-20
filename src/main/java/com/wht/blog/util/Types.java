@@ -17,4 +17,9 @@ public interface Types {
      */
     String POST = "post";
     String PAGE = "page";
+    /**
+     * 分类和标签
+     */
+    String CATEGORY = "category";
+    String TAG = "tag";
 }

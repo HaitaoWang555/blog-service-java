@@ -4,7 +4,7 @@ import com.wht.blog.entity.Middle;
 
 public interface MiddleMapper {
     int deleteByPrimaryKey(Integer id);
-
+    int deleteByArticleId(Integer id);
     int insert(Middle record);
 
     int insertSelective(Middle record);

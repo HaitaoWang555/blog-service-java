@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.wht.blog.dto.Pagination;
 import com.wht.blog.entity.Article;
 import com.wht.blog.service.ArticleService;
+import com.wht.blog.service.MetaService;
 import com.wht.blog.util.Consts;
 import com.wht.blog.util.RestResponse;
 import com.wht.blog.util.Types;
@@ -26,6 +27,8 @@ import java.util.Map;
 public class ArticleController extends BaseController{
     @Resource
     private ArticleService articleService;
+    @Resource
+    private MetaService metasService;
 
     @GetMapping("/list")
     public RestResponse searchList(
@@ -74,8 +77,10 @@ public class ArticleController extends BaseController{
         article.setStatus(status);
         article.setType(type);
         article.setAllowComment(allowComment);
-
         articleService.insertSelective(article);
+        //存储分类和标签
+        metasService.saveOrRemoveMetas(article.getCategory(), Types.CATEGORY, article.getId());
+        metasService.saveOrRemoveMetas(article.getTags(), Types.TAG, article.getId());
         return RestResponse.ok("添加成功");
     }
 
