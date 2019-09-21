@@ -6,7 +6,7 @@ import com.wht.blog.dto.Pagination;
 import com.wht.blog.entity.Article;
 import com.wht.blog.service.ArticleService;
 import com.wht.blog.service.MetaService;
-import com.wht.blog.util.Consts;
+import com.wht.blog.util.Const;
 import com.wht.blog.util.RestResponse;
 import com.wht.blog.util.Types;
 //import org.springframework.util.StringUtils;
@@ -40,7 +40,7 @@ public class ArticleController extends BaseController{
             @RequestParam(value = "meta", required = false) String meta,
             @RequestParam(value = "sortBy", required = false, defaultValue = "updated_at desc") String sortBy,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-            @RequestParam(value = "pageSize", required = false, defaultValue = Consts.PAGE_SIZE) Integer limit
+            @RequestParam(value = "pageSize", required = false, defaultValue = Const.PAGE_SIZE) Integer limit
     ) {
 
         if (id!=null) {

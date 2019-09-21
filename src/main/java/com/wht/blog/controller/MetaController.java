@@ -5,7 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.wht.blog.dto.Pagination;
 import com.wht.blog.entity.Meta;
 import com.wht.blog.service.MetaService;
-import com.wht.blog.util.Consts;
+import com.wht.blog.util.Const;
 import com.wht.blog.util.RestResponse;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +35,7 @@ public class MetaController extends BaseController {
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "sortBy", required = false, defaultValue = "updated_at desc") String sortBy,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-            @RequestParam(value = "pageSize", required = false, defaultValue = Consts.PAGE_SIZE) Integer limit
+            @RequestParam(value = "pageSize", required = false, defaultValue = Const.PAGE_SIZE) Integer limit
     ) {
         if (!StringUtils.isEmpty(id)) {
             return RestResponse.ok(metaService.getOneById(id));

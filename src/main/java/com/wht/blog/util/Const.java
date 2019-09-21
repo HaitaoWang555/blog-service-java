@@ -6,7 +6,7 @@ package com.wht.blog.util;
  * @author wht
  * @since 2019-09-18 16:24
  */
-public interface Consts {
+public interface Const {
     /**
      * 默认分页大小
      */
