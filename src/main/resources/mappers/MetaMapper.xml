@@ -19,6 +19,18 @@
     from meta
     where id = #{id,jdbcType=INTEGER}
   </select>
+  <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from meta
+    where name = #{name,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByArticles" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from meta
+    where type = #{type} and id in (select m_id from middle where a_id = #{articleId})
+  </select>
   <select id="getAll" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" /> from meta
   </select>

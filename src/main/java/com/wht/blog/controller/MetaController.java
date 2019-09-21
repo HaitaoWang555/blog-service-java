@@ -91,7 +91,7 @@ public class MetaController extends BaseController {
     }
 
     @DeleteMapping("/delete")
-    public RestResponse delUser(
+    public RestResponse del(
             @RequestParam(value = "ids") String ids
     ) {
         Map<String, String> map = new HashMap<>();

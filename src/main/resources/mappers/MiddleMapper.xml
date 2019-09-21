@@ -19,6 +19,10 @@
     delete from middle
     where id = #{id,jdbcType=INTEGER}
   </delete>
+  <delete id="deleteByMiddle" parameterType="java.lang.Integer" >
+    delete from middle
+    where a_id = #{articleId,jdbcType=INTEGER} AND m_id = #{metaId,jdbcType=INTEGER}
+  </delete>
   <insert id="insert" parameterType="com.wht.blog.entity.Middle" >
     insert into middle (id, a_id, m_id)
     values (#{id,jdbcType=INTEGER}, #{aId,jdbcType=INTEGER}, #{mId,jdbcType=INTEGER})

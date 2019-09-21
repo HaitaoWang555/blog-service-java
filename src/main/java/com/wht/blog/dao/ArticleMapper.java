@@ -1,9 +1,13 @@
 package com.wht.blog.dao;
 
 import com.wht.blog.entity.Article;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 public interface ArticleMapper {
-    int deleteByPrimaryKey(Integer id);
+    void deleteByPrimaryKeyBatch(Map ids);
 
     int insert(Article record);
 
@@ -11,9 +15,15 @@ public interface ArticleMapper {
 
     Article selectByPrimaryKey(Integer id);
 
-    int updateByPrimaryKeySelective(Article record);
-
-    int updateByPrimaryKeyWithBLOBs(Article record);
+    void updateByPrimaryKeySelective(Article record);
 
     int updateByPrimaryKey(Article record);
+    List getAll();
+    List search(
+            @Param("title")String title,
+            @Param("status")String status,
+            @Param("type")String type,
+            @Param("authorId")Integer authorId,
+            @Param("meta")List meta
+    );
 }

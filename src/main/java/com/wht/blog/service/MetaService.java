@@ -1,12 +1,15 @@
 package com.wht.blog.service;
 
 import com.wht.blog.dao.MetaMapper;
+import com.wht.blog.dao.MiddleMapper;
 import com.wht.blog.entity.Meta;
+import com.wht.blog.entity.Middle;
+import com.wht.blog.exception.TipException;
+import com.wht.blog.util.Types;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author wht
@@ -16,6 +19,8 @@ import java.util.Map;
 public class MetaService {
     @Resource
     private MetaMapper metaMapper;
+    @Resource
+    private MiddleMapper middleMapper;
 
 
     public List getAll () {
@@ -37,5 +42,56 @@ public class MetaService {
 
     public void del (Map ids) {
         metaMapper.deleteByPrimaryKeyBatch(ids);
+    }
+
+    public void saveOrRemoveMeta(String names, String type, Integer articleId) {
+        type = verifyType(type);
+        if (null == articleId) {
+            throw new TipException("关联文章id不能为空");
+        }
+
+        removeMetas(names, type, articleId);
+        saveMetas(names, type, articleId);
+    }
+
+    private void saveMetas(String names, String type, Integer articleId) {
+        List<Meta> metas = metaMapper.selectByArticles(articleId, type);
+        Set<String> metaSet = new HashSet<>();
+        for (Meta meta : metas) {
+            metaSet.add(meta.getName());
+        }
+        String[] nameArr = names.split(",");
+        for (String name : nameArr) {
+            if (!metaSet.contains(name)) {
+                Meta meta = metaMapper.selectByName(name);
+                if (meta != null) {
+                    Middle middle = new Middle();
+                    middle.setAId(articleId);
+                    middle.setMId(meta.getId());
+                    middleMapper.insert(middle);
+                }
+            }
+        }
+    }
+
+    private void removeMetas(String names, String type, Integer articleId) {
+        String[] nameArr = names.split(",");
+        Set<String> nameSet = new HashSet<>(Arrays.asList(nameArr));
+        List<Meta> metas = metaMapper.selectByArticles(articleId, type);
+        for (Meta meta : metas) {
+            if (!nameSet.contains(meta.getName())) {
+                middleMapper.deleteByMiddle(articleId, meta.getId());
+                System.out.println(meta.getId());
+            }
+        }
+
+    }
+
+    private String verifyType(String type) {
+        if (type.equals(Types.CATEGORY) || type.equals(Types.TAG)) {
+            return type;
+        } else {
+            throw new TipException("传输的属性类型不合法");
+        }
     }
 }
