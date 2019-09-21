@@ -37,8 +37,7 @@ public class ArticleController extends BaseController{
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "authorId", required = false) Integer authorId,
-            @RequestParam(value = "tags", required = false) String tags,
-            @RequestParam(value = "category", required = false) String category,
+            @RequestParam(value = "meta", required = false) String meta,
             @RequestParam(value = "sortBy", required = false, defaultValue = "updated_at desc") String sortBy,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", required = false, defaultValue = Consts.PAGE_SIZE) Integer limit
@@ -46,9 +45,9 @@ public class ArticleController extends BaseController{
 
         if (id!=null) {
             return RestResponse.ok(articleService.getOneById(id));
-        } else if (!StringUtils.isAllBlank(title, status, type, tags, category) || authorId!=null) {
+        } else if (!StringUtils.isAllBlank(title, status, type, meta) || authorId!=null) {
             Page<Article> article = PageHelper.startPage(page, limit, sortBy).doSelectPage(() ->
-                    articleService.search(title, status, type, authorId)
+                    articleService.search(title, status, type, authorId, meta)
             );
             return RestResponse.ok(new Pagination<Article>(article));
         } else {

@@ -60,6 +60,15 @@
             <if test="type!=null">
                 and type = #{type,jdbcType=VARCHAR}
             </if>
+            <if test="meta!=null and meta.size() > 0">
+                and id in (
+                    select a_id from middle where m_id in
+                    <foreach item="item" index="index" collection="meta"
+                             open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                )
+            </if>
         </where>
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

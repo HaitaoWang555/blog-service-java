@@ -23,6 +23,7 @@ public interface ArticleMapper {
             @Param("title")String title,
             @Param("status")String status,
             @Param("type")String type,
-            @Param("authorId")Integer authorId
+            @Param("authorId")Integer authorId,
+            @Param("meta")List meta
     );
 }
