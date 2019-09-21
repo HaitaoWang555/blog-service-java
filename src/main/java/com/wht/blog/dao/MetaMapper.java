@@ -16,6 +16,7 @@ public interface MetaMapper {
     int insertSelective(Meta record);
 
     Meta selectByPrimaryKey(Integer id);
+    Meta selectByName(String name);
 
     int updateByPrimaryKeySelective(Meta record);
 

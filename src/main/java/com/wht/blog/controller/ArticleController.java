@@ -79,8 +79,8 @@ public class ArticleController extends BaseController{
         article.setAllowComment(allowComment);
         articleService.insertSelective(article);
         //存储分类和标签
-        metasService.saveOrRemoveMetas(article.getCategory(), Types.CATEGORY, article.getId());
-        metasService.saveOrRemoveMetas(article.getTags(), Types.TAG, article.getId());
+        if (StringUtils.isNotBlank(tags)) metasService.saveOrRemoveMeta(tags, Types.TAG, article.getId());
+        if (StringUtils.isNotBlank(category)) metasService.saveOrRemoveMeta(category, Types.CATEGORY, article.getId());
         return RestResponse.ok("添加成功");
     }
 
@@ -107,11 +107,13 @@ public class ArticleController extends BaseController{
         article.setUpdatedAt(new Date());
 
         articleService.updateByPrimaryKeySelective(article);
+        if (StringUtils.isNotBlank(tags)) metasService.saveOrRemoveMeta(tags, Types.TAG, article.getId());
+        if (StringUtils.isNotBlank(category)) metasService.saveOrRemoveMeta(category, Types.CATEGORY, article.getId());
         return RestResponse.ok("更新成功");
     }
 
     @DeleteMapping("/delete")
-    public RestResponse delUser(
+    public RestResponse del(
             @RequestParam(value = "ids") String ids
     ) {
         Map<String, String> map = new HashMap<>();
