@@ -9,5 +9,6 @@ public class Middle {
     private Integer aId;
 
     private Integer mId;
-
+    private Article article;
+    private Meta meta;
 }

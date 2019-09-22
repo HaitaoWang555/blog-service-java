@@ -6,6 +6,7 @@ import com.wht.blog.dto.Archives;
 import com.wht.blog.dto.Pagination;
 import com.wht.blog.entity.Article;
 import com.wht.blog.service.ArticleService;
+import com.wht.blog.service.MetaService;
 import com.wht.blog.util.Const;
 import com.wht.blog.util.RestResponse;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +29,8 @@ import java.util.List;
 public class PortalController {
     @Resource
     private ArticleService articleService;
+    @Resource
+    private MetaService metaService;
 
     @GetMapping("/article/list")
     public RestResponse home(
@@ -60,13 +63,13 @@ public class PortalController {
         Page<Article> article = PageHelper.startPage(page, limit, sortBy).doSelectPage(() ->
                 articleService.getAll()
         );
-        List<Archives> archives = new ArrayList<>();
+        List<Archives> archives = new ArrayList<>(); // TODO: 转换Page格式
         archives = articleService.archive(article, archives);
         return RestResponse.ok(archives);
     }
     @GetMapping("/tag/list")
     public RestResponse getTagList() {
-        return RestResponse.ok();
+        return RestResponse.ok(metaService.getMetaDto("tag"));
     }
 
     @GetMapping("/category/list")
