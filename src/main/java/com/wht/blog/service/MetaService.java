@@ -94,4 +94,8 @@ public class MetaService {
             throw new TipException("传输的属性类型不合法");
         }
     }
+
+    public List getMetaDto(String type){
+        return metaMapper.selectMetasDtoPublish(type);
+    }
 }

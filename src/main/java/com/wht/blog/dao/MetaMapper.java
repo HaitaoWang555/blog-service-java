@@ -23,6 +23,7 @@ public interface MetaMapper {
 
     List getAll();
     List search(@Param("name")String name, @Param("type")String type);
+    List selectMetasDtoPublish(@Param("type")String type);
 
     List<Meta> selectByArticles(@Param("articleId") Integer articleId, @Param("type") String type);
 }

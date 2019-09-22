@@ -18,7 +18,8 @@ public interface ArticleMapper {
     void updateByPrimaryKeySelective(Article record);
 
     int updateByPrimaryKey(Article record);
-    List getAll();
+    List<Article> getAll();
+    List<Article> getAllWithContent();
     List search(
             @Param("title")String title,
             @Param("status")String status,
