@@ -24,7 +24,7 @@ import java.util.Date;
 
 @RestController
 @Slf4j
-@RequestMapping("/upload")
+@RequestMapping("/manage/upload")
 public class UploadController extends BaseController{
 
     @Resource

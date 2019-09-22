@@ -2,7 +2,6 @@ package com.wht.blog.dao;
 
 import com.wht.blog.entity.Meta;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;

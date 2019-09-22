@@ -13,6 +13,9 @@
   <sql id="Base_Column_List" >
     id, username, email, screen_name, created, logged
   </sql>
+  <sql id="Password_List" >
+    password_md5
+  </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
     select 
     <include refid="Base_Column_List" />
@@ -22,10 +25,19 @@
   <select id="getAll" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" /> from yonghu
   </select>
-
+  <select id="selectByUsername" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />,
+    <include refid="Password_List" />
+    from yonghu
+    where username = #{username,jdbcType=VARCHAR}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from yonghu
     where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByPrimaryKeyBatch" parameterType="java.util.Map">
+    delete from yonghu where id in (${ids})
   </delete>
   <insert id="insert" parameterType="com.wht.blog.entity.User" >
     insert into yonghu (id, username, password_md5, 

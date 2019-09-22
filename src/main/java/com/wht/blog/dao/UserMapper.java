@@ -3,9 +3,11 @@ package com.wht.blog.dao;
 import com.wht.blog.entity.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface UserMapper {
     int deleteByPrimaryKey(Integer id);
+    int deleteByPrimaryKeyBatch(Map ids);
 
     int insert(User record);
 
@@ -18,4 +20,6 @@ public interface UserMapper {
     int updateByPrimaryKey(User record);
 
     List getAll();
+
+    User selectByUsername(String username);
 }

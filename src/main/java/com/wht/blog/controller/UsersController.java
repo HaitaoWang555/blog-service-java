@@ -2,22 +2,48 @@ package com.wht.blog.controller;
 
 import com.wht.blog.entity.User;
 import com.wht.blog.service.UsersService;
+import com.wht.blog.util.Const;
+import com.wht.blog.util.Method;
 import com.wht.blog.util.RestResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author wht
  * @since 2019-09-13 12:51
  */
 @RestController
-public class UsersController {
+@RequestMapping("/manage/user")
+public class UsersController extends BaseController {
     @Resource
     private UsersService usersService;
 
-    @GetMapping("/user")
+    @PostMapping("login")
+    public RestResponse login(@RequestParam String username, @RequestParam String password) {
+        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
+            return RestResponse.fail("用户名和密码不能为空");
+        }
+        User user = usersService.login(username, password);
+        request.getSession().setAttribute(Const.USER_SESSION_KEY, user);
+
+        return RestResponse.ok("登录成功");
+    }
+    @PostMapping("logout")
+    public RestResponse logout() {
+        User user = this.user();
+        if (null == user) {
+            return RestResponse.fail("没有用户登陆");
+        }
+
+        request.getSession().removeAttribute(Const.USER_SESSION_KEY);
+        return RestResponse.ok("退出成功");
+    }
+    @GetMapping("/list")
     public RestResponse getAllUser() {
         return RestResponse.ok(usersService.getAllUser());
     }
@@ -27,10 +53,10 @@ public class UsersController {
         return RestResponse.ok(usersService.getOneById(id));
     }
 
-    @PostMapping("/addUser")
+    @PostMapping("/register")
     public RestResponse addUser(
             @RequestParam(value = "username") String username,
-            @RequestParam(value = "password") String password_md5,
+            @RequestParam(value = "password") String password,
             @RequestParam(value = "email") String email,
             @RequestParam(value = "screenName", required = false) String screen_name
     ) {
@@ -38,12 +64,13 @@ public class UsersController {
         user.setUsername(StringUtils.trim(username));
         user.setEmail(email);
         user.setScreenName(screen_name);
-        user.setPasswordMd5(password_md5);
+        String passwordMd5 = Method.getMd5(password);
+        user.setPasswordMd5(passwordMd5);
         user.setLogged(new Date());
-
         user.setCreated(new Date());
         usersService.addUser(user);
-        return RestResponse.ok("添加成功");
+        this.login(username, password);
+        return RestResponse.ok("注册成功并登录");
     }
 
     @PostMapping("/updateUser")
@@ -67,8 +94,10 @@ public class UsersController {
 
 
     @DeleteMapping("/delUser")
-    public RestResponse delUser(@RequestParam(value = "id") int id) {
-        usersService.delUser(id);
+    public RestResponse delUser(@RequestParam(value = "ids") String ids) {
+        Map<String, String> map = new HashMap<>();
+        map.put("ids", ids);
+        usersService.del(map);
         return RestResponse.ok("删除成功");
     }
 
