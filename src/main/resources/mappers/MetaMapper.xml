@@ -10,7 +10,7 @@
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
   </resultMap>
-  <resultMap id="BaseResultMap2" type="com.wht.blog.entity.MetaDto" >
+  <resultMap id="BaseResultMap2" type="com.wht.blog.dto.MetaDto" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="name" property="name" jdbcType="VARCHAR" />
     <result column="type" property="type" jdbcType="VARCHAR" />
@@ -18,23 +18,9 @@
     <result column="text_color" property="textColor" jdbcType="VARCHAR" />
     <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
     <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
-    <collection property="middles" ofType="Middle">
-      <id column="middleId" property="id" />
-      <result column="a_id" property="aId" jdbcType="INTEGER" />
-      <result column="m_id" property="mId" jdbcType="INTEGER" />
-      <association property="article" javaType="Article">
-        <id column="articleId" property="id" jdbcType="INTEGER"/>
-        <result column="title" property="title" jdbcType="VARCHAR"/>
-        <result column="created_at" jdbcType="TIMESTAMP" property="createdAt"/>
-        <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt"/>
-        <result column="author_id" property="authorId" jdbcType="INTEGER"/>
-        <result column="hits" property="hits" jdbcType="INTEGER"/>
-        <result column="tags" property="tags" jdbcType="VARCHAR"/>
-        <result column="category" property="category" jdbcType="VARCHAR"/>
-        <result column="status" property="status" jdbcType="VARCHAR"/>
-        <result column="type" property="type" jdbcType="VARCHAR"/>
-        <result column="allow_comment" property="allowComment" jdbcType="BIT"/>
-      </association>
+    <collection property="articles" ofType="ArticleInfoDto">
+      <id column="aid" property="id" jdbcType="INTEGER"/>
+      <result column="title" property="title" jdbcType="VARCHAR"/>
     </collection>
   </resultMap>
   <sql id="Base_Column_List" >
@@ -42,7 +28,8 @@
   </sql>
   <select id="selectMetasDtoPublish" resultMap="BaseResultMap2">
     SELECT
-      m.*, a.*, mi.*, m.id 'mid',
+      m.*, a.id,a.title, mi.*,
+      m.id 'mid',
       a.id 'aid',
       mi.id 'miId'
     FROM

@@ -9,6 +9,7 @@ import com.wht.blog.service.ArticleService;
 import com.wht.blog.service.MetaService;
 import com.wht.blog.util.Const;
 import com.wht.blog.util.RestResponse;
+import com.wht.blog.util.Types;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -69,12 +70,12 @@ public class PortalController {
     }
     @GetMapping("/tag/list")
     public RestResponse getTagList() {
-        return RestResponse.ok(metaService.getMetaDto("tag"));
+        return RestResponse.ok(metaService.getMetaDto(Types.TAG));
     }
 
     @GetMapping("/category/list")
     public RestResponse getCategoryList() {
-        return RestResponse.ok();
+        return RestResponse.ok(metaService.getMetaDto(Types.CATEGORY));
     }
 
 }
