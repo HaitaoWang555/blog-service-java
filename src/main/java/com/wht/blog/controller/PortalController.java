@@ -63,9 +63,9 @@ public class PortalController {
         Page<Article> article = PageHelper.startPage(page, limit, sortBy).doSelectPage(() ->
                 articleService.getAll()
         );
-        List<Archives> archives = new ArrayList<>(); // TODO: 转换Page格式
+        Page<Archives> archives = new Page<>();
         archives = articleService.archive(article, archives);
-        return RestResponse.ok(archives);
+        return RestResponse.ok(new Pagination<Archives>(archives));
     }
     @GetMapping("/tag/list")
     public RestResponse getTagList() {

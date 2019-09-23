@@ -25,7 +25,7 @@ import java.io.PrintWriter;
 public class AdminInterceptor implements HandlerInterceptor {
     private static final String AUTH_URIS = "/manage";
 
-    private static final String[] IGNORE_URIS = {"/manage/user/login", "/manage/user/logout"};
+    private static final String[] IGNORE_URIS = {"/manage/user/login", "/manage/user/logout","/manage/user/register"};
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

@@ -1,5 +1,6 @@
 package com.wht.blog.service;
 
+import com.github.pagehelper.Page;
 import com.wht.blog.dao.ArticleMapper;
 import com.wht.blog.dto.Archives;
 import com.wht.blog.entity.Article;
@@ -71,7 +72,7 @@ public class ArticleService {
         article.setContent(content);
     }
 
-    public List<Archives> archive(List<Article> articleList, List<Archives> archives) {
+    public Page<Archives> archive(Page<Article> articleList, Page<Archives> archives) {
         String current = "";
         SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM" );
         for (Article article:articleList) {
