@@ -10,13 +10,11 @@ public class Comment {
 
     private Integer articleId;
 
-    private Integer pId;
+    private Integer parentId;
 
-    private String name;
+    private Integer userId;
 
-    private String email;
-
-    private String website;
+    private Integer replyUserId;
 
     private Integer agree;
 
@@ -29,5 +27,7 @@ public class Comment {
     private Date created;
 
     private String content;
+
+    private Boolean isHaveLeaf;
 
 }

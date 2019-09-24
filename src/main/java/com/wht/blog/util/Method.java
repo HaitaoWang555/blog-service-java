@@ -1,6 +1,7 @@
 package com.wht.blog.util;
 
 import com.wht.blog.entity.User;
+import org.springframework.http.HttpHeaders;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -87,5 +88,13 @@ public class Method {
         }
         return ip;
     }
+    /**
+     * 获取agent
+     *
+     * @return User-Agent信息
+     */
+    public static String getAgent() {
+        return getRequest().getHeader(HttpHeaders.USER_AGENT);
 
+    }
 }

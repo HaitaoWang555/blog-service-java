@@ -29,5 +29,6 @@ public class Article {
     private Boolean allowComment;
 
     private String content;
+    private Integer commentCount;
 
 }

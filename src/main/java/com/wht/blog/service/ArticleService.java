@@ -59,7 +59,10 @@ public class ArticleService {
     public void del(Map<String, String> ids) {
         articleMapper.deleteByPrimaryKeyBatch(ids);
     }
-
+    public int getCommentCount (int id) {
+        Article article = articleMapper.getCommentCount(id);
+        return article.getCommentCount();
+    }
     private void transformPreView(Article article) {
         String content = article.getContent();
         Integer maxLen = Const.MAX_PREVIEW_COUNT;

@@ -12,8 +12,8 @@ public interface ArticleMapper {
     int insert(Article record);
 
     int insertSelective(Article record);
-
     Article selectByPrimaryKey(Integer id);
+    Article getCommentCount(Integer id);
 
     void updateByPrimaryKeySelective(Article record);
 

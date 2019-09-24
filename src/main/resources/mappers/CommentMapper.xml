@@ -4,21 +4,33 @@
   <resultMap id="BaseResultMap" type="com.wht.blog.entity.Comment" >
     <id column="id" property="id" jdbcType="INTEGER" />
     <result column="article_id" property="articleId" jdbcType="INTEGER" />
-    <result column="p_id" property="pId" jdbcType="INTEGER" />
-    <result column="name" property="name" jdbcType="VARCHAR" />
-    <result column="email" property="email" jdbcType="VARCHAR" />
-    <result column="website" property="website" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="reply_user_id" property="replyUserId" jdbcType="INTEGER" />
     <result column="agree" property="agree" jdbcType="INTEGER" />
     <result column="disagree" property="disagree" jdbcType="INTEGER" />
     <result column="ip" property="ip" jdbcType="VARCHAR" />
     <result column="agent" property="agent" jdbcType="VARCHAR" />
     <result column="created" property="created" jdbcType="TIMESTAMP" />
+    <result column="is_have_leaf" property="isHaveLeaf" jdbcType="BIT"/>
   </resultMap>
   <resultMap id="ResultMapWithBLOBs" type="com.wht.blog.entity.Comment" extends="BaseResultMap" >
     <result column="content" property="content" jdbcType="LONGVARCHAR" />
   </resultMap>
+  <resultMap id="ResultMapWithBLOBsAndUser" type="com.wht.blog.dto.CommentDto" extends="ResultMapWithBLOBs">
+      <association property="userInfo" column="userInfo" javaType="UserDto">
+          <id column="uid" property="id" jdbcType="INTEGER" />
+          <result column="username" property="userName" jdbcType="VARCHAR" />
+          <result column="screen_name" property="screenName" jdbcType="VARCHAR" />
+      </association>
+      <association property="replyUserInfo" column="replyUserInfo" javaType="UserDto">
+          <id column="r_uid" property="id" jdbcType="INTEGER" />
+          <result column="r_username" property="userName" jdbcType="VARCHAR" />
+          <result column="r_screen_name" property="screenName" jdbcType="VARCHAR" />
+      </association>
+  </resultMap>
   <sql id="Base_Column_List" >
-    id, article_id, p_id, name, email, website, agree, disagree, ip, agent, created
+    id, article_id, parent_id, user_id, reply_user_id, agree, disagree, ip, agent, created, is_have_leaf
   </sql>
   <sql id="Blob_Column_List" >
     content
@@ -31,20 +43,41 @@
     from comment
     where id = #{id,jdbcType=INTEGER}
   </select>
+  <select id="search" resultMap="ResultMapWithBLOBsAndUser" parameterType="java.lang.Integer" >
+    select
+      u.*,c.*,
+      u.id 'uid',
+      r_u.id 'r_uid',
+      r_u.username 'r_username',
+      r_u.screen_name 'r_screen_name'
+    from comment c
+      LEFT JOIN yonghu u ON u.id = c.user_id
+      LEFT JOIN yonghu r_u ON r_u.id = c.reply_user_id
+    <where>
+      <if test="article_id!=null">
+        and article_id = #{article_id,jdbcType=INTEGER}
+      </if>
+      <if test="parent_id!=null">
+        and parent_id = #{parent_id,jdbcType=INTEGER}
+      </if>
+    </where>
+      ORDER BY c.agree DESC,c.disagree ASC,c.created ASC
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from comment
     where id = #{id,jdbcType=INTEGER}
   </delete>
   <insert id="insert" parameterType="com.wht.blog.entity.Comment" >
-    insert into comment (id, article_id, p_id, 
-      name, email, website, 
-      agree, disagree, ip, 
-      agent, created, content
+    insert into comment (id, article_id, parent_id,
+                         user_id, reply_user_id,
+                          agree, disagree, ip,
+                          agent, created, content,
+                         is_have_leaf
       )
-    values (#{id,jdbcType=INTEGER}, #{articleId,jdbcType=INTEGER}, #{pId,jdbcType=INTEGER}, 
-      #{name,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{website,jdbcType=VARCHAR}, 
-      #{agree,jdbcType=INTEGER}, #{disagree,jdbcType=INTEGER}, #{ip,jdbcType=VARCHAR}, 
-      #{agent,jdbcType=VARCHAR}, #{created,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR}
+    values (#{id,jdbcType=INTEGER}, #{articleId,jdbcType=INTEGER}, #{parentId,jdbcType=INTEGER},
+                                    #{userId,jdbcType=INTEGER}, #{replyUserId,jdbcType=INTEGER},
+                                    #{agree,jdbcType=INTEGER}, #{disagree,jdbcType=INTEGER}, #{ip,jdbcType=VARCHAR},
+      #{agent,jdbcType=VARCHAR}, #{created,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR}, #{isHaveLeaf,jdbcType=BIT}
       )
   </insert>
   <insert id="insertSelective" parameterType="com.wht.blog.entity.Comment" >
@@ -56,17 +89,14 @@
       <if test="articleId != null" >
         article_id,
       </if>
-      <if test="pId != null" >
-        p_id,
+      <if test="userId != null" >
+        user_id,
       </if>
-      <if test="name != null" >
-        name,
+      <if test="replyUserId != null" >
+        reply_user_id,
       </if>
-      <if test="email != null" >
-        email,
-      </if>
-      <if test="website != null" >
-        website,
+      <if test="parentId != null" >
+        parent_id,
       </if>
       <if test="agree != null" >
         agree,
@@ -86,6 +116,9 @@
       <if test="content != null" >
         content,
       </if>
+      <if test="isHaveLeaf != null" >
+        is_have_leaf,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -94,17 +127,14 @@
       <if test="articleId != null" >
         #{articleId,jdbcType=INTEGER},
       </if>
-      <if test="pId != null" >
-        #{pId,jdbcType=INTEGER},
+      <if test="parentId != null" >
+        #{parentId,jdbcType=INTEGER},
       </if>
-      <if test="name != null" >
-        #{name,jdbcType=VARCHAR},
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
       </if>
-      <if test="email != null" >
-        #{email,jdbcType=VARCHAR},
-      </if>
-      <if test="website != null" >
-        #{website,jdbcType=VARCHAR},
+      <if test="replyUserId != null" >
+        #{replyUserId,jdbcType=INTEGER},
       </if>
       <if test="agree != null" >
         #{agree,jdbcType=INTEGER},
@@ -124,6 +154,9 @@
       <if test="content != null" >
         #{content,jdbcType=LONGVARCHAR},
       </if>
+      <if test="isHaveLeaf != null" >
+        #{isHaveLeaf,jdbcType=BIT},
+      </if>
     </trim>
   </insert>
   <update id="updateByPrimaryKeySelective" parameterType="com.wht.blog.entity.Comment" >
@@ -132,17 +165,14 @@
       <if test="articleId != null" >
         article_id = #{articleId,jdbcType=INTEGER},
       </if>
-      <if test="pId != null" >
-        p_id = #{pId,jdbcType=INTEGER},
+      <if test="parentId != null" >
+        parent_id = #{parentId,jdbcType=INTEGER},
       </if>
-      <if test="name != null" >
-        name = #{name,jdbcType=VARCHAR},
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
       </if>
-      <if test="email != null" >
-        email = #{email,jdbcType=VARCHAR},
-      </if>
-      <if test="website != null" >
-        website = #{website,jdbcType=VARCHAR},
+      <if test="replyUserId != null" >
+        reply_user_id = #{replyUserId,jdbcType=INTEGER},
       </if>
       <if test="agree != null" >
         agree = #{agree,jdbcType=INTEGER},
@@ -162,36 +192,13 @@
       <if test="content != null" >
         content = #{content,jdbcType=LONGVARCHAR},
       </if>
+      <if test="isHaveLeaf != null" >
+        is_have_leaf = #{isHaveLeaf,jdbcType=BIT},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.wht.blog.entity.Comment" >
-    update comment
-    set article_id = #{articleId,jdbcType=INTEGER},
-      p_id = #{pId,jdbcType=INTEGER},
-      name = #{name,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      website = #{website,jdbcType=VARCHAR},
-      agree = #{agree,jdbcType=INTEGER},
-      disagree = #{disagree,jdbcType=INTEGER},
-      ip = #{ip,jdbcType=VARCHAR},
-      agent = #{agent,jdbcType=VARCHAR},
-      created = #{created,jdbcType=TIMESTAMP},
-      content = #{content,jdbcType=LONGVARCHAR}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.wht.blog.entity.Comment" >
-    update comment
-    set article_id = #{articleId,jdbcType=INTEGER},
-      p_id = #{pId,jdbcType=INTEGER},
-      name = #{name,jdbcType=VARCHAR},
-      email = #{email,jdbcType=VARCHAR},
-      website = #{website,jdbcType=VARCHAR},
-      agree = #{agree,jdbcType=INTEGER},
-      disagree = #{disagree,jdbcType=INTEGER},
-      ip = #{ip,jdbcType=VARCHAR},
-      agent = #{agent,jdbcType=VARCHAR},
-      created = #{created,jdbcType=TIMESTAMP}
-    where id = #{id,jdbcType=INTEGER}
-  </update>
+  <delete id="deleteByPrimaryKeyBatch" parameterType="java.util.Map">
+    delete from comment where id in (${ids})
+  </delete>
 </mapper>
