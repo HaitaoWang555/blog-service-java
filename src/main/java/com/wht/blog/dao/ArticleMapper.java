@@ -15,7 +15,7 @@ public interface ArticleMapper {
     Article selectByPrimaryKey(Integer id);
     Article getCommentCount(Integer id);
 
-    void updateByPrimaryKeySelective(Article record);
+    int updateByPrimaryKeySelective(Article record);
 
     int updateByPrimaryKey(Article record);
     List<Article> getAll();

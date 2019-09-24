@@ -105,9 +105,11 @@ public class ArticleController extends BaseController{
         article.setAllowComment(allowComment);
         article.setUpdatedAt(new Date());
 
-        articleService.updateByPrimaryKeySelective(article);
-        if (StringUtils.isNotBlank(tags)) metasService.saveOrRemoveMeta(tags, Types.TAG, article.getId());
-        if (StringUtils.isNotBlank(category)) metasService.saveOrRemoveMeta(category, Types.CATEGORY, article.getId());
+        int update = articleService.updateByPrimaryKeySelective(article);
+        if (update != 0) {
+            if (StringUtils.isNotBlank(tags)) metasService.saveOrRemoveMeta(tags, Types.TAG, article.getId());
+            if (StringUtils.isNotBlank(category)) metasService.saveOrRemoveMeta(category, Types.CATEGORY, article.getId());
+        }
         return RestResponse.ok("更新成功");
     }
 

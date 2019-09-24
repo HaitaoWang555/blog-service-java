@@ -52,8 +52,8 @@ public class ArticleService {
         return articleMapper.insertSelective(article);
     }
 
-    public void updateByPrimaryKeySelective(Article article) {
-        articleMapper.updateByPrimaryKeySelective(article);
+    public int updateByPrimaryKeySelective(Article article) {
+        return articleMapper.updateByPrimaryKeySelective(article);
     }
 
     public void del(Map<String, String> ids) {
