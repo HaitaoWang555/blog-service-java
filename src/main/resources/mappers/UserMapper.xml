@@ -47,7 +47,7 @@
       #{email,jdbcType=VARCHAR}, #{screenName,jdbcType=VARCHAR}, #{created,jdbcType=TIMESTAMP}, 
       #{logged,jdbcType=TIMESTAMP})
   </insert>
-  <insert id="insertSelective" parameterType="com.wht.blog.entity.User" >
+  <insert id="insertSelective" parameterType="com.wht.blog.entity.User" useGeneratedKeys="true" keyProperty="id">
     insert into yonghu
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

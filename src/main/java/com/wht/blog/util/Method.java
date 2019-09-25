@@ -29,7 +29,14 @@ public class Method {
         User user = (User) session.getAttribute(Const.USER_SESSION_KEY);
         return user;
     }
-
+    public static Integer getLoginUserId() {
+        Integer userId = 0;
+        User user = getLoginUser();
+        if (user != null) {
+            userId = user.getId();
+        }
+        return userId;
+    }
     /**
      * 获取session
      *

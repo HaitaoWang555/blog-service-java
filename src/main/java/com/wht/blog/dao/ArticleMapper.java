@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface ArticleMapper {
-    void deleteByPrimaryKeyBatch(Map ids);
+    int deleteByPrimaryKeyBatch(Map ids);
 
     int insert(Article record);
 

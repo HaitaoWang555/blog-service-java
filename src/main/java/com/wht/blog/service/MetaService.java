@@ -5,6 +5,7 @@ import com.wht.blog.dao.MiddleMapper;
 import com.wht.blog.entity.Meta;
 import com.wht.blog.entity.Middle;
 import com.wht.blog.exception.TipException;
+import com.wht.blog.util.Method;
 import com.wht.blog.util.Types;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +22,8 @@ public class MetaService {
     private MetaMapper metaMapper;
     @Resource
     private MiddleMapper middleMapper;
-
+    @Resource
+    private LogService logService;
 
     public List getAll () {
         return metaMapper.getAll();
@@ -40,8 +42,11 @@ public class MetaService {
         metaMapper.updateByPrimaryKeySelective(meta);
     }
 
-    public void del (Map ids) {
-        metaMapper.deleteByPrimaryKeyBatch(ids);
+    public void del (Map<String, String> ids) {
+        int delLen = metaMapper.deleteByPrimaryKeyBatch(ids);
+        if (delLen != 0) {
+            this.saveLog(ids.get("ids"));
+        }
     }
 
     public void saveOrRemoveMeta(String names, String type, Integer articleId) {
@@ -97,5 +102,14 @@ public class MetaService {
 
     public List getMetaDto(String type){
         return metaMapper.selectMetasDtoPublish(type);
+    }
+
+    private void saveLog(String ids) {
+        logService.save(
+                Types.LOG_ACTION_DELETE, "id:" + ids,
+                Types.LOG_MESSAGE_DELETE_META,
+                Types.LOG_TYPE_OPERATE,
+                Method.getIp()
+        );
     }
 }

@@ -22,4 +22,12 @@ public interface Types {
      */
     String CATEGORY = "category";
     String TAG = "tag";
+
+    String LOG_MESSAGE_DELETE_ARTICLE = "删除文章";
+    String LOG_MESSAGE_DELETE_META = "删除分类/标签";
+    String LOG_MESSAGE_DELETE_USER = "删除用户";
+    String LOG_MESSAGE_ADD_USER = "用户注册";
+    String LOG_ACTION_DELETE = "删除";
+    String LOG_ACTION_ADD = "新增";
+    String LOG_TYPE_OPERATE = "operate";
 }

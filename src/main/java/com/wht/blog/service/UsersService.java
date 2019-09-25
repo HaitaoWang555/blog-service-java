@@ -4,6 +4,7 @@ import com.wht.blog.dao.UserMapper;
 import com.wht.blog.entity.User;
 import com.wht.blog.exception.TipException;
 import com.wht.blog.util.Method;
+import com.wht.blog.util.Types;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,7 +20,8 @@ import java.util.Map;
 public class UsersService {
     @Resource
     private UserMapper userMapper;
-
+    @Resource
+    private LogService logService;
 
     public List getAllUser () {
         return userMapper.getAll();
@@ -28,15 +30,21 @@ public class UsersService {
         return userMapper.selectByPrimaryKey(id);
     }
     public void addUser (User user) {
-        userMapper.insert(user);
+        int addInt = userMapper.insertSelective(user);
+        if (addInt != 0) {
+            this.saveLog(user);
+        }
     }
 
     public void updateByPrimaryKeySelective (User user) {
         userMapper.updateByPrimaryKeySelective(user);
     }
 
-    public void del (Map ids) {
-        userMapper.deleteByPrimaryKeyBatch(ids);
+    public void del (Map<String, String> ids) {
+        int delLen = userMapper.deleteByPrimaryKeyBatch(ids);
+        if (delLen != 0) {
+            this.saveLog(ids.get("ids"));
+        }
     }
     
     public User login(String username, String password) {
@@ -53,5 +61,24 @@ public class UsersService {
         //清空密码
         user.setPasswordMd5(null);
         return user;
+    }
+
+    private void saveLog(String ids) {
+        logService.save(
+                Types.LOG_ACTION_DELETE, "id:" + ids,
+                Types.LOG_MESSAGE_DELETE_USER,
+                Types.LOG_TYPE_OPERATE,
+                Method.getIp(),
+                Method.getLoginUserId()
+        );
+    }
+    private void saveLog(User user) {
+        logService.save(
+                Types.LOG_ACTION_ADD, "name:" + user.getUsername(),
+                Types.LOG_MESSAGE_ADD_USER,
+                Types.LOG_TYPE_OPERATE,
+                Method.getIp(),
+                Method.getLoginUserId()
+        );
     }
 }

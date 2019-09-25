@@ -5,6 +5,8 @@ import com.wht.blog.dao.ArticleMapper;
 import com.wht.blog.dto.Archives;
 import com.wht.blog.entity.Article;
 import com.wht.blog.util.Const;
+import com.wht.blog.util.Method;
+import com.wht.blog.util.Types;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -21,6 +23,8 @@ public class ArticleService {
 
     @Resource
     private ArticleMapper articleMapper;
+    @Resource
+    private LogService logService;
 
     public Article getOneById(int id) {
         return articleMapper.selectByPrimaryKey(id);
@@ -57,7 +61,10 @@ public class ArticleService {
     }
 
     public void del(Map<String, String> ids) {
-        articleMapper.deleteByPrimaryKeyBatch(ids);
+        int delLen =  articleMapper.deleteByPrimaryKeyBatch(ids);
+        if (delLen != 0) {
+            this.saveLog(ids.get("ids"));
+        }
     }
     public int getCommentCount (int id) {
         Article article = articleMapper.getCommentCount(id);
@@ -96,5 +103,14 @@ public class ArticleService {
             }
         }
         return archives;
+    }
+
+    private void saveLog(String ids) {
+        logService.save(
+                Types.LOG_ACTION_DELETE, "id:" + ids,
+                Types.LOG_MESSAGE_DELETE_ARTICLE,
+                Types.LOG_TYPE_OPERATE,
+                Method.getIp()
+        );
     }
 }
