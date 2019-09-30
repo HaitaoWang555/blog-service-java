@@ -54,7 +54,7 @@
         from article
         <where>
             <if test="title!=null">
-                and title like concat('%',#{title},'%')
+                title like concat('%',#{title},'%')
             </if>
             <if test="authorId!=null">
                 and author_id = #{authorId,jdbcType=INTEGER}

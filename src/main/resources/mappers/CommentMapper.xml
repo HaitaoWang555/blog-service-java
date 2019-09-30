@@ -55,7 +55,7 @@
       LEFT JOIN yonghu r_u ON r_u.id = c.reply_user_id
     <where>
       <if test="article_id!=null">
-        and article_id = #{article_id,jdbcType=INTEGER}
+        article_id = #{article_id,jdbcType=INTEGER}
       </if>
       <if test="parent_id!=null">
         and parent_id = #{parent_id,jdbcType=INTEGER}
