@@ -31,7 +31,7 @@ public class UsersController extends BaseController {
         User user = usersService.login(username, password);
         request.getSession().setAttribute(Const.USER_SESSION_KEY, user);
 
-        return RestResponse.ok("登录成功");
+        return RestResponse.ok(user,0, "登录成功" );
     }
     @PostMapping("logout")
     public RestResponse logout() {
@@ -49,7 +49,8 @@ public class UsersController extends BaseController {
     }
 
     @GetMapping("/getOneById")
-    public RestResponse getOneById(@RequestParam(value = "id") Integer id) {
+    public RestResponse getOneById() {
+        int id = this.user().getId();
         return RestResponse.ok(usersService.getOneById(id));
     }
 
