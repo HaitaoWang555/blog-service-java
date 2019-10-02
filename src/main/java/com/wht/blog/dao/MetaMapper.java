@@ -21,7 +21,7 @@ public interface MetaMapper {
 
     int updateByPrimaryKey(Meta record);
 
-    List getAll();
+    List<Meta> getAll();
     List search(@Param("name")String name, @Param("type")String type);
     List selectMetasDtoPublish(@Param("type")String type);
 

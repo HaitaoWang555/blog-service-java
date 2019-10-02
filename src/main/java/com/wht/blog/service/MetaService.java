@@ -25,7 +25,7 @@ public class MetaService {
     @Resource
     private LogService logService;
 
-    public List getAll () {
+    public List<Meta> getAll () {
         return metaMapper.getAll();
     }
     public List search(String name, String type) {

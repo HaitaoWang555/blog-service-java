@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,6 +34,7 @@ public class MetaController extends BaseController {
             @RequestParam(value = "id", required = false) Integer id,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "type", required = false) String type,
+            @RequestParam(value = "list", required = false) String list,
             @RequestParam(value = "sortBy", required = false, defaultValue = "updated_at desc") String sortBy,
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", required = false, defaultValue = Const.PAGE_SIZE) Integer limit
@@ -43,6 +45,9 @@ public class MetaController extends BaseController {
             Page<Meta> meta = PageHelper.startPage(page, limit, sortBy).doSelectPage(() ->
                     metaService.search(name, type)
             );
+            return RestResponse.ok(new Pagination<Meta>(meta));
+        } else if (!StringUtils.isEmpty(list) && list.equals("all")) {
+            List<Meta> meta = metaService.getAll();
             return RestResponse.ok(new Pagination<Meta>(meta));
         } else {
             Page<Meta> meta = PageHelper.startPage(page, limit, sortBy).doSelectPage(() ->

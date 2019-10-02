@@ -18,7 +18,7 @@ public class Pagination<T> {
     private int pages;
     private boolean count;
     private String orderBy;
-    private List<T> item;
+    private List<T> items;
 
     public Pagination() {
     }
@@ -31,6 +31,16 @@ public class Pagination<T> {
         pages =page.getPages();
         count = page.isCount();
         orderBy = page.getOrderBy();
-        item = page.getResult();
+        items = page.getResult();
+    }
+
+    public Pagination(List list) {
+        pageNum = 1;
+        pageSize = list.size();
+        total = list.size();
+        pages = 1;
+        count = false;
+        orderBy = "";
+        items = list;
     }
 }
