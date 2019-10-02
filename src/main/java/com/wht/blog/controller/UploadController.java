@@ -39,7 +39,7 @@ public class UploadController extends BaseController{
         }
         String realPath = "src/main/resources" + fileTempPath;
         File dir = new File(realPath);
-        boolean filePathHave = false;
+        boolean filePathHave = true;
         if(!dir.isDirectory()){
             filePathHave = dir.mkdirs();
         }
@@ -60,9 +60,9 @@ public class UploadController extends BaseController{
             log.error("【文件上传至本地】失败，绝对路径：{}", localFilePath);
             return RestResponse.fail("文件上传失败");
         }
-        String url = this.getServiceIp() + "/" + newName;
+        String url = this.getServiceIp() + fileTempPath + newName;
         log.info("【文件上传至本地】绝对路径：{}", localFilePath);
-        return RestResponse.ok(url);
+        return RestResponse.ok(url, 0, "上传成功");
     }
 
     private String getServiceIp() {
