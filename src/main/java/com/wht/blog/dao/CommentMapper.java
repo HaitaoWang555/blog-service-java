@@ -1,5 +1,6 @@
 package com.wht.blog.dao;
 
+import com.wht.blog.dto.CommentDto;
 import com.wht.blog.entity.Comment;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,5 +16,5 @@ public interface CommentMapper {
 
     int updateByPrimaryKeySelective(Comment record);
     void deleteByPrimaryKeyBatch(Map ids);
-    List search(@Param("article_id") Integer article_id, @Param("parent_id") Integer parent_id);
+    List<CommentDto> search(@Param("article_id") Integer article_id, @Param("parent_id") Integer parent_id);
 }

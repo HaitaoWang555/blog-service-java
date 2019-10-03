@@ -1,6 +1,7 @@
 package com.wht.blog.util;
 
 import com.wht.blog.entity.User;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -8,6 +9,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 
 /**
  * 通用方法
@@ -103,5 +105,17 @@ public class Method {
     public static String getAgent() {
         return getRequest().getHeader(HttpHeaders.USER_AGENT);
 
+    }
+
+    public static User addUser(String username, String email, String screen_name, String password) {
+        User user = new User();
+        user.setUsername(StringUtils.trim(username));
+        user.setEmail(email);
+        user.setScreenName(screen_name);
+        String passwordMd5 = Method.getMd5(password);
+        user.setPasswordMd5(passwordMd5);
+        user.setLogged(new Date());
+        user.setCreated(new Date());
+        return user;
     }
 }

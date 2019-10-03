@@ -36,6 +36,12 @@
         from article
         where id = #{id,jdbcType=INTEGER}
     </select>
+    <select id="selectByPrimaryKeyNoContent" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from article
+        where id = #{id,jdbcType=INTEGER}
+    </select>
     <select id="getAllWithContent" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -47,6 +53,7 @@
         select
         <include refid="Base_Column_List"/>
         from article
+        order by updated_at desc
     </select>
     <select id="search" resultMap="BaseResultMap">
         select

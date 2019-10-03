@@ -29,7 +29,9 @@ public class ArticleService {
     public Article getOneById(int id) {
         return articleMapper.selectByPrimaryKey(id);
     }
-
+    public Article getOneByIdNoContent(int id) {
+        return articleMapper.selectByPrimaryKeyNoContent(id);
+    }
     public List<Article> getAll() {
         return articleMapper.getAll();
     }
@@ -82,7 +84,7 @@ public class ArticleService {
         article.setContent(content);
     }
 
-    public Page<Archives> archive(Page<Article> articleList, Page<Archives> archives) {
+    public List<Archives> archive(List<Article> articleList, List<Archives> archives) {
         String current = "";
         SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM" );
         for (Article article:articleList) {

@@ -3,6 +3,7 @@ package com.wht.blog.controller;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.wht.blog.dto.Archives;
+import com.wht.blog.dto.CommentDto;
 import com.wht.blog.dto.Pagination;
 import com.wht.blog.entity.Article;
 import com.wht.blog.entity.Comment;
@@ -10,11 +11,15 @@ import com.wht.blog.entity.User;
 import com.wht.blog.service.ArticleService;
 import com.wht.blog.service.CommentService;
 import com.wht.blog.service.MetaService;
+import com.wht.blog.service.UsersService;
 import com.wht.blog.util.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 博客前台 controller
@@ -31,6 +36,9 @@ public class PortalController extends BaseController{
     private MetaService metaService;
     @Resource
     private CommentService commentService;
+    @Resource
+    private UsersService usersService;
+
     @GetMapping("/article/list")
     public RestResponse home(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
@@ -54,15 +62,9 @@ public class PortalController extends BaseController{
     }
 
     @GetMapping("/archive/list")
-    public RestResponse getArchiveList(
-            @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
-            @RequestParam(value = "pageSize", required = false, defaultValue = Const.PAGE_SIZE) Integer limit
-    ) {
-        String sortBy = "updated_at desc";
-        Page<Article> article = PageHelper.startPage(page, limit, sortBy).doSelectPage(() ->
-                articleService.getAll()
-        );
-        Page<Archives> archives = new Page<>();
+    public RestResponse getArchiveList() {
+        List<Article> article = articleService.getAll();
+        List<Archives> archives = new ArrayList<>();
         archives = articleService.archive(article, archives);
         return RestResponse.ok(new Pagination<Archives>(archives));
     }
@@ -82,37 +84,54 @@ public class PortalController extends BaseController{
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
             @RequestParam(value = "pageSize", required = false, defaultValue = Const.PAGE_SIZE) Integer limit
     ) {
-        Page<Article> comment = PageHelper.startPage(page, limit).doSelectPage(() ->
+        Page<CommentDto> comment = PageHelper.startPage(page, limit).doSelectPage(() ->
                 commentService.getAll(article_id, parent_id)
         );
         return RestResponse.ok(new Pagination<Archives>(comment));
     }
     @PostMapping("/comment/add")
     public RestResponse addComment(
-            @RequestParam(value = "articleId") Integer article_id,
+            @RequestParam(value = "article_id") Integer article_id,
             @RequestParam(value = "content") String content,
-            @RequestParam(value = "parentId", required = false) Integer parent_id,
-            @RequestParam(value = "replyUserId", required = false) Integer reply_user_id
+            @RequestParam(value = "parent_id", required = false) Integer parent_id,
+            @RequestParam(value = "reply_user_id", required = false) Integer reply_user_id
     ) {
         User user = this.user();
         if (null == user) {
             return RestResponse.fail(ErrorCode.NOT_LOGIN.getCode(),"请登陆");
         } else {
-            this.insertComment(article_id, content, parent_id, reply_user_id, user);
+            Comment comment = this.insertComment(article_id, content, parent_id, reply_user_id, user);
             if (parent_id != null) {
                 this.upDateParentComment(parent_id);
             }
             this.upDateArticle(article_id);
-            return RestResponse.ok("添加成功");
+            return RestResponse.ok(comment, 0, "添加成功");
         }
     }
-
-    private void insertComment(Integer article_id, String content, Integer parent_id, Integer reply_user_id, User user) {
+    @PostMapping("/user/login")
+    public RestResponse login(@RequestParam String username, @RequestParam String password) {
+        User user = usersService.login(username, password);
+        request.getSession().setAttribute(Const.USER_SESSION_KEY, user);
+        return RestResponse.ok(user,0, "登录成功" );
+    }
+    @PostMapping("/user/register")
+    public RestResponse addUser(
+            @RequestParam(value = "username") String username,
+            @RequestParam(value = "password") String password,
+            @RequestParam(value = "email") String email,
+            @RequestParam(value = "screenName", required = false) String screen_name
+    ) {
+        User user = Method.addUser(username, password, email, screen_name);
+        usersService.addUser(user);
+        this.login(username, password);
+        return RestResponse.ok("注册成功并登录");
+    }
+    private Comment insertComment(Integer article_id, String content, Integer parent_id, Integer reply_user_id, User user) {
         Comment comment = new Comment();
         comment.setArticleId(article_id);
         comment.setContent(content);
         if (parent_id != null) comment.setParentId(parent_id);
-        if (reply_user_id != null) comment.setParentId(reply_user_id);
+        if (reply_user_id != null) comment.setReplyUserId(reply_user_id);
         String Ip = Method.getIp();
         comment.setIp(Ip);
         String agent = Method.getAgent();
@@ -120,6 +139,7 @@ public class PortalController extends BaseController{
         comment.setUserId(user.getId());
         comment.setCreated(new Date());
         commentService.add(comment);
+        return comment;
     }
     private void upDateParentComment(Integer parent_id) {
         Comment commentParent = new Comment();
@@ -128,10 +148,8 @@ public class PortalController extends BaseController{
         commentService.update(commentParent);
     }
     private void upDateArticle(Integer article_id) {
-        Article article = new Article();
-        article.setId(article_id);
-        Article article1 = articleService.getOneById(article_id);
-        int count = article1.getCommentCount() != null ? article1.getCommentCount() : 0;
+        Article article = articleService.getOneByIdNoContent(article_id);
+        int count = article.getCommentCount() != null ? article.getCommentCount() : 0;
         article.setCommentCount(count + 1);
         articleService.updateByPrimaryKeySelective(article);
     }

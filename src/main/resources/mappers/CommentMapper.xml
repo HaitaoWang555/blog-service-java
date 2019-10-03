@@ -45,7 +45,7 @@
   </select>
   <select id="search" resultMap="ResultMapWithBLOBsAndUser" parameterType="java.lang.Integer" >
     select
-      u.*,c.*,
+      c.*,u.*,
       u.id 'uid',
       r_u.id 'r_uid',
       r_u.username 'r_username',
@@ -54,11 +54,11 @@
       LEFT JOIN yonghu u ON u.id = c.user_id
       LEFT JOIN yonghu r_u ON r_u.id = c.reply_user_id
     <where>
-      <if test="article_id!=null">
-        article_id = #{article_id,jdbcType=INTEGER}
+      <if test="article_id!=null and parent_id==null">
+        article_id = #{article_id,jdbcType=INTEGER} and parent_id is null
       </if>
-      <if test="parent_id!=null">
-        and parent_id = #{parent_id,jdbcType=INTEGER}
+      <if test="article_id!=null and parent_id!=null">
+        article_id = #{article_id,jdbcType=INTEGER} and parent_id = #{parent_id,jdbcType=INTEGER}
       </if>
     </where>
       ORDER BY c.agree DESC,c.disagree ASC,c.created ASC
@@ -80,7 +80,7 @@
       #{agent,jdbcType=VARCHAR}, #{created,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR}, #{isHaveLeaf,jdbcType=BIT}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.wht.blog.entity.Comment" >
+  <insert id="insertSelective" parameterType="com.wht.blog.entity.Comment" useGeneratedKeys="true" keyProperty="id">
     insert into comment
     <trim prefix="(" suffix=")" suffixOverrides="," >
       <if test="id != null" >

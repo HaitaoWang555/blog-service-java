@@ -13,6 +13,7 @@ public interface ArticleMapper {
 
     int insertSelective(Article record);
     Article selectByPrimaryKey(Integer id);
+    Article selectByPrimaryKeyNoContent(Integer id);
     Article getCommentCount(Integer id);
 
     int updateByPrimaryKeySelective(Article record);

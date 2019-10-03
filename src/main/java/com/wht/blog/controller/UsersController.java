@@ -25,9 +25,6 @@ public class UsersController extends BaseController {
 
     @PostMapping("login")
     public RestResponse login(@RequestParam String username, @RequestParam String password) {
-        if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-            return RestResponse.fail("用户名和密码不能为空");
-        }
         User user = usersService.login(username, password);
         request.getSession().setAttribute(Const.USER_SESSION_KEY, user);
 
@@ -61,14 +58,7 @@ public class UsersController extends BaseController {
             @RequestParam(value = "email") String email,
             @RequestParam(value = "screenName", required = false) String screen_name
     ) {
-        User user = new User();
-        user.setUsername(StringUtils.trim(username));
-        user.setEmail(email);
-        user.setScreenName(screen_name);
-        String passwordMd5 = Method.getMd5(password);
-        user.setPasswordMd5(passwordMd5);
-        user.setLogged(new Date());
-        user.setCreated(new Date());
+        User user = Method.addUser(username, password, email, screen_name);
         usersService.addUser(user);
         this.login(username, password);
         return RestResponse.ok("注册成功并登录");
