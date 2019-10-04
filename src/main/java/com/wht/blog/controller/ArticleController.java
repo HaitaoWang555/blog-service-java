@@ -45,7 +45,7 @@ public class ArticleController extends BaseController{
 
         if (id!=null) {
             return RestResponse.ok(articleService.getOneById(id));
-        } else if (!StringUtils.isAllBlank(title, status, type, meta) || authorId!=null) {
+        } else if (!StringUtils.isAllBlank(title, status, type, meta) || authorId!=null || sortBy.equals("updated_at desc")) {
             Page<Article> article = PageHelper.startPage(page, limit, sortBy).doSelectPage(() ->
                     articleService.search(title, status, type, authorId, meta)
             );

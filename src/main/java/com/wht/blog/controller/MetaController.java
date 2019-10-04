@@ -69,6 +69,8 @@ public class MetaController extends BaseController {
         meta.setType(type);
         meta.setColor(color);
         meta.setTextColor(text_color);
+        meta.setUpdatedAt(new Date());
+        meta.setCreatedAt(new Date());
 
         metaService.insertSelective(meta);
         return RestResponse.ok(meta, 0, "添加成功");

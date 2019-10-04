@@ -114,6 +114,11 @@ public class PortalController extends BaseController{
         request.getSession().setAttribute(Const.USER_SESSION_KEY, user);
         return RestResponse.ok(user,0, "登录成功" );
     }
+    @PostMapping("/user/logout")
+    public RestResponse logout() {
+        request.getSession().setAttribute(Const.USER_SESSION_KEY, null);
+        return RestResponse.ok("退出成功" );
+    }
     @PostMapping("/user/register")
     public RestResponse addUser(
             @RequestParam(value = "username") String username,
@@ -121,10 +126,10 @@ public class PortalController extends BaseController{
             @RequestParam(value = "email") String email,
             @RequestParam(value = "screenName", required = false) String screen_name
     ) {
-        User user = Method.addUser(username, password, email, screen_name);
+        User user = Method.addUser(username, email, screen_name, password);
         usersService.addUser(user);
         this.login(username, password);
-        return RestResponse.ok("注册成功并登录");
+        return RestResponse.ok(user,0,"注册成功并登录");
     }
     private Comment insertComment(Integer article_id, String content, Integer parent_id, Integer reply_user_id, User user) {
         Comment comment = new Comment();
