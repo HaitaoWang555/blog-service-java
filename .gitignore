@@ -33,5 +33,5 @@ build/
 
 ### Log ###
 /logs
-/src/main/resources/upload/
+/upload/
 /src/main/resources/rebel.xml

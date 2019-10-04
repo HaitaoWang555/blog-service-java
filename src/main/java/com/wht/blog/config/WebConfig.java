@@ -40,7 +40,7 @@ public class WebConfig {
 
             @Override
             public void addResourceHandlers(ResourceHandlerRegistry registry) {
-                registry.addResourceHandler("/upload/**").addResourceLocations("classpath:/upload/");
+                registry.addResourceHandler("/upload/**").addResourceLocations("file:upload/");
             }
         };
     }

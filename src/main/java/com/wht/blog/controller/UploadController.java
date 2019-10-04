@@ -30,14 +30,14 @@ public class UploadController extends BaseController{
     @Resource
     private Environment environment;
 
-    private final static String fileTempPath = "/upload/";
+    private final static String fileTempPath = "upload/";
 
     @PostMapping("/local")
     public RestResponse local(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             return RestResponse.fail("文件为空");
         }
-        String realPath = "src/main/resources" + fileTempPath;
+        String realPath = fileTempPath;
         File dir = new File(realPath);
         boolean filePathHave = true;
         if(!dir.isDirectory()){
@@ -60,7 +60,7 @@ public class UploadController extends BaseController{
             log.error("【文件上传至本地】失败，绝对路径：{}", localFilePath);
             return RestResponse.fail("文件上传失败");
         }
-        String url = this.getServiceIp() + fileTempPath + newName;
+        String url = this.getServiceIp() + "/" + fileTempPath + newName;
         log.info("【文件上传至本地】绝对路径：{}", localFilePath);
         return RestResponse.ok(url, 0, "上传成功");
     }
