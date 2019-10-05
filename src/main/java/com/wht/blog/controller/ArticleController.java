@@ -1,7 +1,14 @@
 package com.wht.blog.controller;
 
+import com.google.common.base.Joiner;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.vladsch.flexmark.ext.tables.TablesExtension;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.parser.ParserEmulationProfile;
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 import com.wht.blog.dto.Pagination;
 import com.wht.blog.entity.Article;
 import com.wht.blog.service.ArticleService;
@@ -9,14 +16,18 @@ import com.wht.blog.service.MetaService;
 import com.wht.blog.util.Const;
 import com.wht.blog.util.RestResponse;
 import com.wht.blog.util.Types;
-//import org.springframework.util.StringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author wht
@@ -68,18 +79,7 @@ public class ArticleController extends BaseController{
             @RequestParam(value = "type", defaultValue = Types.POST) String type,
             @RequestParam(value = "allowComment", defaultValue = "false") Boolean allowComment
     ) {
-        Article article = new Article();
-        article.setTitle(title);
-        article.setContent(content);
-        article.setTags(tags);
-        article.setCategory(category);
-        article.setStatus(status);
-        article.setType(type);
-        article.setAllowComment(allowComment);
-        articleService.insertSelective(article);
-        //存储分类和标签
-        if (StringUtils.isNotBlank(tags)) metasService.saveOrRemoveMeta(tags, Types.TAG, article.getId());
-        if (StringUtils.isNotBlank(category)) metasService.saveOrRemoveMeta(category, Types.CATEGORY, article.getId());
+        this.insert(title, content, tags, category, status, type, allowComment);
         return RestResponse.ok("添加成功");
     }
 
@@ -122,4 +122,43 @@ public class ArticleController extends BaseController{
         articleService.del(map);
         return RestResponse.ok("删除成功");
     }
+
+    @PostMapping("/upload")
+    public RestResponse upload(
+            @RequestParam(value = "file") MultipartFile file
+    ) throws IOException {
+        InputStream inputStream = file.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        List<String> list = reader.lines().collect(Collectors.toList());
+        String content = Joiner.on("\n").join(list);
+
+        MutableDataSet options = new MutableDataSet();
+        options.setFrom(ParserEmulationProfile.MARKDOWN);
+        // enable table parse!
+        options.set(Parser.EXTENSIONS, Collections.singletonList(TablesExtension.create()));
+        Parser parser = Parser.builder(options).build();
+        HtmlRenderer renderer = HtmlRenderer.builder(options).build();
+
+        // You can re-use parser and renderer instances
+        Node document = parser.parse(content);
+        String html = renderer.render(document);
+
+        return RestResponse.ok(html, 0, "导入成功");
+    }
+
+    private void insert(String title, String content, String tags, String category, String status, String type, Boolean allowComment) {
+        Article article = new Article();
+        article.setTitle(title);
+        article.setContent(content);
+        article.setTags(tags);
+        article.setCategory(category);
+        article.setStatus(status);
+        article.setType(type);
+        article.setAllowComment(allowComment);
+        articleService.insertSelective(article);
+        //存储分类和标签
+        if (StringUtils.isNotBlank(tags)) metasService.saveOrRemoveMeta(tags, Types.TAG, article.getId());
+        if (StringUtils.isNotBlank(category)) metasService.saveOrRemoveMeta(category, Types.CATEGORY, article.getId());
+    }
+
 }
