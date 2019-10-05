@@ -31,13 +31,18 @@ public class MetaService {
     public List search(String name, String type) {
         return metaMapper.search(name, type);
     }
+    public List<Meta> search(String[] ids) {
+        return metaMapper.searchByIds(ids);
+    }
     public Meta getOneById (int id) {
         return metaMapper.selectByPrimaryKey(id);
     }
     public void insertSelective (Meta meta) {
         metaMapper.insertSelective(meta);
     }
-
+    public void insertSelective (List<Meta> metas) {
+        metaMapper.insertSelectiveBatch(metas);
+    }
     public void updateByPrimaryKeySelective (Meta meta) {
         metaMapper.updateByPrimaryKeySelective(meta);
     }

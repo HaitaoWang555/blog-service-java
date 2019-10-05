@@ -1,5 +1,6 @@
 package com.wht.blog.controller;
 
+import com.alibaba.excel.EasyExcel;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.wht.blog.dto.Pagination;
@@ -9,8 +10,10 @@ import com.wht.blog.util.Const;
 import com.wht.blog.util.RestResponse;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -107,4 +110,11 @@ public class MetaController extends BaseController {
         return RestResponse.ok("删除成功");
     }
 
+    @PostMapping("/upload")
+    public RestResponse upload(MultipartFile file) throws IOException {
+        UploadExcelListener uploadExcelListener = new UploadExcelListener();
+        uploadExcelListener.metaService = metaService;
+        EasyExcel.read(file.getInputStream(), Meta.class, uploadExcelListener).sheet().doRead();
+        return RestResponse.ok("上传成功");
+    }
 }

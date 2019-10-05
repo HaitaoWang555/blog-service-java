@@ -70,6 +70,14 @@
       </if>
     </where>
   </select>
+  <select id="searchByIds" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from meta
+    where id in
+    <foreach item="item" index="index" collection="ids"
+             open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
     delete from meta
     where id = #{id,jdbcType=INTEGER}
@@ -84,6 +92,17 @@
     values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR},
             #{color,jdbcType=VARCHAR}, #{textColor,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP},
             #{updatedAt,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelectiveBatch" parameterType="java.util.List">
+    insert into meta (id, name, type,
+                      color, text_color, created_at,
+                      updated_at)
+    values
+    <foreach collection ="metas" item="meta" separator =",">
+      (#{meta.id,jdbcType=INTEGER}, #{meta.name,jdbcType=VARCHAR}, #{meta.type,jdbcType=VARCHAR},
+      #{meta.color,jdbcType=VARCHAR}, #{meta.textColor,jdbcType=VARCHAR}, #{meta.createdAt,jdbcType=TIMESTAMP},
+      #{meta.updatedAt,jdbcType=TIMESTAMP})
+    </foreach>
   </insert>
   <insert id="insertSelective" parameterType="com.wht.blog.entity.Meta" useGeneratedKeys="true" keyProperty="id" >
     insert into meta
@@ -134,6 +153,58 @@
       </if>
     </trim>
   </insert>
+<!--  <insert id="insertSelectiveBatch" parameterType="java.util.List" >-->
+<!--    insert into meta-->
+<!--    <foreach collection ="metas" item="meta" separator =",">-->
+<!--      <trim prefix="(" suffix=")" suffixOverrides="," >-->
+<!--        <if test="meta.id != null" >-->
+<!--          id,-->
+<!--        </if>-->
+<!--        <if test="meta.name != null" >-->
+<!--          name,-->
+<!--        </if>-->
+<!--        <if test="meta.type != null" >-->
+<!--          type,-->
+<!--        </if>-->
+<!--        <if test="meta.color != null" >-->
+<!--          color,-->
+<!--        </if>-->
+<!--        <if test="meta.textColor != null" >-->
+<!--          text_color,-->
+<!--        </if>-->
+<!--        <if test="meta.createdAt != null">-->
+<!--          created_at,-->
+<!--        </if>-->
+<!--        <if test="meta.updatedAt != null">-->
+<!--          updated_at,-->
+<!--        </if>-->
+<!--      </trim>-->
+<!--      <trim prefix="values (" suffix=")" suffixOverrides="," >-->
+<!--        <if test="meta.id != null" >-->
+<!--          #{meta.id,jdbcType=INTEGER},-->
+<!--        </if>-->
+<!--        <if test="meta.name != null" >-->
+<!--          #{meta.name,jdbcType=VARCHAR},-->
+<!--        </if>-->
+<!--        <if test="meta.type != null" >-->
+<!--          #{meta.type,jdbcType=VARCHAR},-->
+<!--        </if>-->
+<!--        <if test="meta.color != null" >-->
+<!--          #{meta.color,jdbcType=VARCHAR},-->
+<!--        </if>-->
+<!--        <if test="meta.textColor != null" >-->
+<!--          #{meta.textColor,jdbcType=VARCHAR},-->
+<!--        </if>-->
+<!--        <if test="meta.createdAt != null">-->
+<!--          #{meta.createdAt,jdbcType=TIMESTAMP},-->
+<!--        </if>-->
+<!--        <if test="meta.updatedAt != null">-->
+<!--          #{meta.updatedAt,jdbcType=TIMESTAMP},-->
+<!--        </if>-->
+<!--      </trim>-->
+<!--    </foreach>-->
+
+<!--  </insert>-->
   <update id="updateByPrimaryKeySelective" parameterType="com.wht.blog.entity.Meta">
     update meta
     <set >

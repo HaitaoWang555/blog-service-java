@@ -13,6 +13,7 @@ public interface MetaMapper {
     int insert(Meta record);
 
     int insertSelective(Meta record);
+    void insertSelectiveBatch(@Param("metas") List<Meta> metas);
 
     Meta selectByPrimaryKey(Integer id);
     Meta selectByName(String name);
@@ -23,6 +24,7 @@ public interface MetaMapper {
 
     List<Meta> getAll();
     List search(@Param("name")String name, @Param("type")String type);
+    List<Meta> searchByIds(@Param("ids")String[] ids);
     List selectMetasDtoPublish(@Param("type")String type);
 
     List<Meta> selectByArticles(@Param("articleId") Integer articleId, @Param("type") String type);
