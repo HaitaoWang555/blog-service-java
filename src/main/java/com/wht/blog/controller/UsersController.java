@@ -18,7 +18,7 @@ import java.util.Map;
  * @since 2019-09-13 12:51
  */
 @RestController
-@RequestMapping("/manage/user")
+@RequestMapping("/api/manage/user")
 public class UsersController extends BaseController {
     @Resource
     private UsersService usersService;

@@ -28,7 +28,7 @@ import java.util.List;
  * @since 2019-09-22 22:21
  */
 @RestController
-@RequestMapping("/portal")
+@RequestMapping("/api/portal")
 public class PortalController extends BaseController{
     @Resource
     private ArticleService articleService;

@@ -26,7 +26,7 @@ import java.util.Map;
  * @since 2019-09-16 16:32
  */
 @RestController
-@RequestMapping("/manage/metas")
+@RequestMapping("/api/manage/metas")
 public class MetaController extends BaseController {
 
     @Resource

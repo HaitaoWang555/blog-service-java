@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * @since 2019-09-19 15:03
  */
 @RestController
-@RequestMapping("/manage/article")
+@RequestMapping("/api/manage/article")
 public class ArticleController extends BaseController{
     @Resource
     private ArticleService articleService;

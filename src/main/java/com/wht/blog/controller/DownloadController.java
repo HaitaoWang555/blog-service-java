@@ -21,7 +21,7 @@ import java.util.List;
  * @since 2019-10-05 5:32
  */
 @RestController
-@RequestMapping("/manage/download")
+@RequestMapping("/api/manage/download")
 public class DownloadController {
     @Resource
     private MetaService metaService;
