@@ -26,7 +26,7 @@ public class WebConfig {
             //跨域请求配置
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/manage/**")
+                registry.addMapping("/api/**")
                         .allowCredentials(true)
                         .allowedOrigins("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE");
@@ -35,7 +35,7 @@ public class WebConfig {
             //拦截器
             @Override
             public void addInterceptors(InterceptorRegistry registry) {
-                registry.addInterceptor(adminInterceptor).addPathPatterns("/manage/**");
+                registry.addInterceptor(adminInterceptor).addPathPatterns("/api/**");
             }
 
             @Override
