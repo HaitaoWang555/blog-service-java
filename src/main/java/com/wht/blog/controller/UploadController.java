@@ -60,20 +60,9 @@ public class UploadController extends BaseController{
             log.error("【文件上传至本地】失败，绝对路径：{}", localFilePath);
             return RestResponse.fail("文件上传失败");
         }
-        String url = this.getServiceIp() + "/" + fileTempPath + newName;
+        String url = "/" + fileTempPath + newName;
         log.info("【文件上传至本地】绝对路径：{}", localFilePath);
         return RestResponse.ok(url, 0, "上传成功");
-    }
-
-    private String getServiceIp() {
-        InetAddress address = null;
-        try {
-            address = InetAddress.getLocalHost();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        assert address != null;
-        return address.getHostAddress() + ":" + environment.getProperty("local.server.port");
     }
 
 }
