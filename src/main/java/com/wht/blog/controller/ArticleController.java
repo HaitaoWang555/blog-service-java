@@ -3,12 +3,6 @@ package com.wht.blog.controller;
 import com.google.common.base.Joiner;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.vladsch.flexmark.ext.tables.TablesExtension;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.parser.ParserEmulationProfile;
-import com.vladsch.flexmark.util.ast.Node;
-import com.vladsch.flexmark.util.data.MutableDataSet;
 import com.wht.blog.dto.Pagination;
 import com.wht.blog.entity.Article;
 import com.wht.blog.service.ArticleService;
@@ -131,19 +125,7 @@ public class ArticleController extends BaseController{
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         List<String> list = reader.lines().collect(Collectors.toList());
         String content = Joiner.on("\n").join(list);
-
-        MutableDataSet options = new MutableDataSet();
-        options.setFrom(ParserEmulationProfile.MARKDOWN);
-        // enable table parse!
-        options.set(Parser.EXTENSIONS, Collections.singletonList(TablesExtension.create()));
-        Parser parser = Parser.builder(options).build();
-        HtmlRenderer renderer = HtmlRenderer.builder(options).build();
-
-        // You can re-use parser and renderer instances
-        Node document = parser.parse(content);
-        String html = renderer.render(document);
-
-        return RestResponse.ok(html, 0, "导入成功");
+        return RestResponse.ok(content, 0, "导入成功");
     }
 
     private void insert(String title, String content, String tags, String category, String status, String type, Boolean allowComment) {
