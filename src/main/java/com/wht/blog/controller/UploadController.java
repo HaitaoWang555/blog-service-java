@@ -62,7 +62,7 @@ public class UploadController extends BaseController{
         }
         String url = "/" + fileTempPath + newName;
         log.info("【文件上传至本地】绝对路径：{}", localFilePath);
-        return RestResponse.ok(url, 0, "上传成功");
+        return RestResponse.ok(url, "上传成功");
     }
 
 }

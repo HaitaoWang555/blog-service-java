@@ -28,7 +28,7 @@ public class UsersController extends BaseController {
         User user = usersService.login(username, password);
         request.getSession().setAttribute(Const.USER_SESSION_KEY, user);
 
-        return RestResponse.ok(user,0, "登录成功" );
+        return RestResponse.ok(user,"登录成功" );
     }
     @PostMapping("logout")
     public RestResponse logout() {

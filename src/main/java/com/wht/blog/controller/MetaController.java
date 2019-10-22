@@ -76,7 +76,7 @@ public class MetaController extends BaseController {
         meta.setCreatedAt(new Date());
 
         metaService.insertSelective(meta);
-        return RestResponse.ok(meta, 0, "添加成功");
+        return RestResponse.ok(meta, "添加成功");
     }
 
     @PostMapping("/update")

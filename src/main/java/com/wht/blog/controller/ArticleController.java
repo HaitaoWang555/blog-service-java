@@ -125,7 +125,7 @@ public class ArticleController extends BaseController{
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         List<String> list = reader.lines().collect(Collectors.toList());
         String content = Joiner.on("\n").join(list);
-        return RestResponse.ok(content, 0, "导入成功");
+        return RestResponse.ok(content,"导入成功");
     }
 
     private void insert(String title, String content, String tags, String category, String status, String type, Boolean allowComment) {

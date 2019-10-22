@@ -105,14 +105,14 @@ public class PortalController extends BaseController{
                 this.upDateParentComment(parent_id);
             }
             this.upDateArticle(article_id);
-            return RestResponse.ok(comment, 0, "添加成功");
+            return RestResponse.ok(comment, "添加成功");
         }
     }
     @PostMapping("/user/login")
     public RestResponse login(@RequestParam String username, @RequestParam String password) {
         User user = usersService.login(username, password);
         request.getSession().setAttribute(Const.USER_SESSION_KEY, user);
-        return RestResponse.ok(user,0, "登录成功" );
+        return RestResponse.ok(user,"登录成功" );
     }
     @PostMapping("/user/logout")
     public RestResponse logout() {
@@ -129,7 +129,7 @@ public class PortalController extends BaseController{
         User user = Method.addUser(username, email, screen_name, password);
         usersService.addUser(user);
         this.login(username, password);
-        return RestResponse.ok(user,0,"注册成功并登录");
+        return RestResponse.ok(user,"注册成功并登录");
     }
     private Comment insertComment(Integer article_id, String content, Integer parent_id, Integer reply_user_id, User user) {
         Comment comment = new Comment();

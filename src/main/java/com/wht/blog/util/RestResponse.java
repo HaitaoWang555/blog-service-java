@@ -28,12 +28,6 @@ public class RestResponse<T> {
         this.data = data;
     }
 
-    private RestResponse(boolean success, T data, int code) {
-        this.success = success;
-        this.data = data;
-        this.code = code;
-    }
-
     private RestResponse(boolean success, int code) {
         this.success = success;
         this.code = code;
@@ -43,17 +37,19 @@ public class RestResponse<T> {
         this.success = success;
         this.msg = msg;
     }
-
-    private RestResponse(boolean success, T data, String msg, int code) {
+    private RestResponse(boolean success, T data, int code) {
         this.success = success;
         this.data = data;
-        this.msg = msg;
         this.code = code;
     }
-
     private RestResponse(boolean success, int code, String msg) {
         this.success = success;
         this.code = code;
+        this.msg = msg;
+    }
+    private RestResponse(boolean success,T data, String msg) {
+        this.success = success;
+        this.data = data;
         this.msg = msg;
     }
 
@@ -76,8 +72,8 @@ public class RestResponse<T> {
         return new RestResponse<>(true, data, code);
     }
 
-    public static <T> RestResponse ok(T data, int code, String msg) {
-        return new RestResponse<>(true, data, msg, code);
+    public static <T> RestResponse ok(T data, String msg) {
+        return new RestResponse<>(true, data, msg);
     }
 
     public static RestResponse fail() {
