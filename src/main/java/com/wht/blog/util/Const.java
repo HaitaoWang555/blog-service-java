@@ -22,5 +22,5 @@ public interface Const {
     /**
      * 默认预览字数
      */
-    Integer MAX_PREVIEW_COUNT = 255;
+    Integer MAX_PREVIEW_COUNT = 150;
 }

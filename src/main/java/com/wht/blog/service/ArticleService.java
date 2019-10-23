@@ -75,12 +75,7 @@ public class ArticleService {
     private void transformPreView(Article article) {
         String content = article.getContent();
         Integer maxLen = Const.MAX_PREVIEW_COUNT;
-        Integer contentLen = content.length();
-        if (contentLen > maxLen) {
-            int index = content.substring(0, maxLen).lastIndexOf("</p>");
-            int len = index > -1 ? index : maxLen;
-            content = content.substring(0, len).concat("......</p>");
-        }
+        content =Method.delHTMLTag(content).substring(0, maxLen).concat(" ......");
         article.setContent(content);
     }
 

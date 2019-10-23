@@ -13,7 +13,6 @@ import com.wht.blog.service.CommentService;
 import com.wht.blog.service.MetaService;
 import com.wht.blog.service.UsersService;
 import com.wht.blog.util.*;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -105,7 +104,7 @@ public class PortalController extends BaseController{
                 this.upDateParentComment(parent_id);
             }
             this.upDateArticle(article_id);
-            return RestResponse.ok(comment, "添加成功");
+            return RestResponse.ok(comment, "评论成功");
         }
     }
     @PostMapping("/user/login")

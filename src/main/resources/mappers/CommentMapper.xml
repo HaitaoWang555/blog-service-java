@@ -89,14 +89,14 @@
       <if test="articleId != null" >
         article_id,
       </if>
+      <if test="parentId != null" >
+        parent_id,
+      </if>
       <if test="userId != null" >
         user_id,
       </if>
       <if test="replyUserId != null" >
         reply_user_id,
-      </if>
-      <if test="parentId != null" >
-        parent_id,
       </if>
       <if test="agree != null" >
         agree,
