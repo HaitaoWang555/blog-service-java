@@ -11,14 +11,30 @@ import com.wht.blog.util.Const;
 import com.wht.blog.util.RestResponse;
 import com.wht.blog.util.Types;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xwpf.converter.core.BasicURIResolver;
+import org.apache.poi.xwpf.converter.core.FileImageExtractor;
+import org.apache.poi.xwpf.converter.xhtml.XHTMLConverter;
+import org.apache.poi.xwpf.converter.xhtml.XHTMLOptions;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.converter.WordToHtmlConverter;
+import org.apache.poi.hwpf.usermodel.Picture;
+import org.w3c.dom.Document;
+
+import org.fit.cssbox.css.CSSNorm;
+import org.fit.cssbox.css.DOMAnalyzer;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import javax.annotation.Resource;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -120,11 +136,25 @@ public class ArticleController extends BaseController{
     @PostMapping("/upload")
     public RestResponse upload(
             @RequestParam(value = "file") MultipartFile file
-    ) throws IOException {
+    ) throws IOException, TransformerException, ParserConfigurationException {
+        String fileName = file.getOriginalFilename();
         InputStream inputStream = file.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-        List<String> list = reader.lines().collect(Collectors.toList());
-        String content = Joiner.on("\n").join(list);
+        assert fileName != null;
+        String suffix = fileName.substring(fileName.indexOf(".") + 1);
+        String content;
+        switch (suffix.toLowerCase()) {
+            case "md":
+                content = handleMd(inputStream);
+                break;
+            case "doc":
+                content = handleDoc(inputStream);
+                break;
+            case "docx":
+                content = handleDocx(inputStream);
+                break;
+            default:
+                return RestResponse.fail("格式不正确");
+        }
         return RestResponse.ok(content,"导入成功");
     }
 
@@ -143,4 +173,67 @@ public class ArticleController extends BaseController{
         if (StringUtils.isNotBlank(category)) metasService.saveOrRemoveMeta(category, Types.CATEGORY, article.getId());
     }
 
+    private String handleMd(InputStream inputStream) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        List<String> list = reader.lines().collect(Collectors.toList());
+        return Joiner.on("\n").join(list);
+    }
+
+    private String handleDoc(InputStream inputStream) throws IOException, ParserConfigurationException, TransformerException {
+        String imagePathStr = "upload/";
+        File dir = new File(imagePathStr);
+        if(!dir.isDirectory()) dir.mkdirs();
+        HWPFDocument wordDocument = new HWPFDocument(inputStream);
+        WordToHtmlConverter wordToHtmlConverter = new WordToHtmlConverter(DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument());
+        wordToHtmlConverter.setPicturesManager((a, b, suggestedName, d, e) -> imagePathStr + File.separator + suggestedName);
+        wordToHtmlConverter.processDocument(wordDocument);
+        List<Picture> pics = wordDocument.getPicturesTable().getAllPictures();
+
+        for (Picture pic : pics) {
+            pic.writeImageContent(new FileOutputStream(imagePathStr + pic.suggestFullFileName()));
+        }
+
+        Document htmlDocument = wordToHtmlConverter.getDocument();
+
+        DOMAnalyzer da = new DOMAnalyzer(htmlDocument);
+        da.attributesToStyles();
+        da.addStyleSheet(null, CSSNorm.stdStyleSheet(), DOMAnalyzer.Origin.AGENT);
+        da.addStyleSheet(null, CSSNorm.userStyleSheet(), DOMAnalyzer.Origin.AGENT);
+        da.getStyleSheets(); //load the author style sheets
+        da.stylesToDomInherited();
+
+        DOMSource domSource = new DOMSource(htmlDocument);
+        StringWriter stringWriter = new StringWriter();
+        Transformer transformer = TransformerFactory.newInstance()
+                .newTransformer();
+        transformer.setOutputProperty( OutputKeys.INDENT, "yes" );
+        transformer.setOutputProperty( OutputKeys.ENCODING, "utf-8" );
+        transformer.setOutputProperty( OutputKeys.METHOD, "html" );
+        transformer.transform(
+                domSource,
+                new StreamResult( stringWriter ) );
+        return stringWriter.toString();
+    }
+
+    private String handleDocx(InputStream inputStream) {
+//        String imagePathStr = "upload/";
+//        File dir = new File(imagePathStr);
+//        if(!dir.isDirectory()) dir.mkdirs();
+//
+//        XWPFDocument document = new XWPFDocument(inputStream);
+//        document.createNumbering();
+//        XHTMLOptions options = XHTMLOptions.create();
+//        // 存放图片的文件夹
+//        options.setExtractor(new FileImageExtractor(new File(imagePathStr)));
+//        // html中图片的路径
+//        options.URIResolver(new BasicURIResolver(imagePathStr));
+//        options.setIgnoreStylesIfUnused(false);
+//        options.setFragment(true);
+//
+//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+//        XHTMLConverter.getInstance().convert(document, byteArrayOutputStream, options);
+//
+//        return byteArrayOutputStream.toString();
+        return "";
+    }
 }

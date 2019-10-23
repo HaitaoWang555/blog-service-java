@@ -2,18 +2,14 @@ package com.wht.blog.controller;
 
 import com.wht.blog.util.RestResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,9 +22,6 @@ import java.util.Date;
 @Slf4j
 @RequestMapping("/api/manage/upload")
 public class UploadController extends BaseController{
-
-    @Resource
-    private Environment environment;
 
     private final static String fileTempPath = "upload/";
 
