@@ -10,11 +10,10 @@ import com.wht.blog.service.MetaService;
 import com.wht.blog.util.Const;
 import com.wht.blog.util.RestResponse;
 import com.wht.blog.util.Types;
+import fr.opensagres.poi.xwpf.converter.core.ImageManager;
+import fr.opensagres.poi.xwpf.converter.xhtml.XHTMLConverter;
+import fr.opensagres.poi.xwpf.converter.xhtml.XHTMLOptions;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.xwpf.converter.core.BasicURIResolver;
-import org.apache.poi.xwpf.converter.core.FileImageExtractor;
-import org.apache.poi.xwpf.converter.xhtml.XHTMLConverter;
-import org.apache.poi.xwpf.converter.xhtml.XHTMLOptions;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -215,25 +214,20 @@ public class ArticleController extends BaseController{
         return stringWriter.toString();
     }
 
-    private String handleDocx(InputStream inputStream) {
-//        String imagePathStr = "upload/";
-//        File dir = new File(imagePathStr);
-//        if(!dir.isDirectory()) dir.mkdirs();
-//
-//        XWPFDocument document = new XWPFDocument(inputStream);
-//        document.createNumbering();
-//        XHTMLOptions options = XHTMLOptions.create();
-//        // 存放图片的文件夹
-//        options.setExtractor(new FileImageExtractor(new File(imagePathStr)));
-//        // html中图片的路径
-//        options.URIResolver(new BasicURIResolver(imagePathStr));
-//        options.setIgnoreStylesIfUnused(false);
-//        options.setFragment(true);
-//
-//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//        XHTMLConverter.getInstance().convert(document, byteArrayOutputStream, options);
-//
-//        return byteArrayOutputStream.toString();
-        return "";
+    private String handleDocx(InputStream inputStream) throws IOException {
+        String imagePathStr = "upload/";
+
+        XWPFDocument document = new XWPFDocument(inputStream);
+        XHTMLOptions options = XHTMLOptions.create();
+
+        // 存放图片的文件夹 html中图片的路径
+        options.setImageManager(new ImageManager( new File("./"),  imagePathStr + "word" ));
+        options.setIgnoreStylesIfUnused(false);
+        options.setFragment(true);
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        XHTMLConverter.getInstance().convert(document, byteArrayOutputStream, options);
+
+        return byteArrayOutputStream.toString();
     }
 }
