@@ -8,6 +8,7 @@ import com.wht.blog.entity.Article;
 import com.wht.blog.service.ArticleService;
 import com.wht.blog.service.MetaService;
 import com.wht.blog.util.Const;
+import com.wht.blog.util.Method;
 import com.wht.blog.util.RestResponse;
 import com.wht.blog.util.Types;
 import fr.opensagres.poi.xwpf.converter.core.ImageManager;
@@ -179,7 +180,7 @@ public class ArticleController extends BaseController{
     }
 
     private String handleDoc(InputStream inputStream) throws IOException, ParserConfigurationException, TransformerException {
-        String imagePathStr = "upload/";
+        String imagePathStr = Method.createFilePath("article");
         File dir = new File(imagePathStr);
         if(!dir.isDirectory()) dir.mkdirs();
         HWPFDocument wordDocument = new HWPFDocument(inputStream);
@@ -215,13 +216,13 @@ public class ArticleController extends BaseController{
     }
 
     private String handleDocx(InputStream inputStream) throws IOException {
-        String imagePathStr = "upload/";
+        String imagePathStr = Method.createFilePath("article");
 
         XWPFDocument document = new XWPFDocument(inputStream);
         XHTMLOptions options = XHTMLOptions.create();
 
         // 存放图片的文件夹 html中图片的路径
-        options.setImageManager(new ImageManager( new File("./"),  imagePathStr + "word" ));
+        options.setImageManager(new ImageManager( new File("./"),  "/" + imagePathStr ));
         options.setIgnoreStylesIfUnused(false);
         options.setFragment(true);
 

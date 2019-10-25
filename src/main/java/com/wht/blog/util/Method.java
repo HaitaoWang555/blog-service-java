@@ -9,6 +9,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -138,4 +140,16 @@ public class Method {
         return htmlStr.trim(); //返回文本字符串
     }
 
+    /**
+     * 创建上传文件路径
+     * @param model 模块
+     * @return upload - 模块 - 用户ID - 时间 - 文件名
+     */
+    public static String createFilePath(String model) {
+        String fileTempPath = "upload/";
+        String userId = getLoginUserId().toString();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String format = sdf.format(new Date());
+        return fileTempPath + model + "/" + userId + "/" + format + "/";
+    }
 }
