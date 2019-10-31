@@ -55,7 +55,7 @@ public class ArticleController extends BaseController{
     public RestResponse searchList(
             @RequestParam(value = "id", required = false) Integer id,
             @RequestParam(value = "title", required = false) String title,
-            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "status", required = false, defaultValue = "publish") String status,
             @RequestParam(value = "type", required = false) String type,
             @RequestParam(value = "authorId", required = false) Integer authorId,
             @RequestParam(value = "meta", required = false) String meta,
@@ -86,7 +86,7 @@ public class ArticleController extends BaseController{
             @RequestParam(value = "tags") String tags,
             @RequestParam(value = "category") String category,
             @RequestParam(value = "status", defaultValue = Types.DRAFT) String status,
-            @RequestParam(value = "type", defaultValue = Types.POST) String type,
+            @RequestParam(value = "type", defaultValue = Types.MARKDOWN) String type,
             @RequestParam(value = "allowComment", defaultValue = "false") Boolean allowComment
     ) {
         this.insert(title, content, tags, category, status, type, allowComment);

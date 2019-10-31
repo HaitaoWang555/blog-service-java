@@ -15,8 +15,8 @@ public interface Types {
     /**
      * 文章类型 post 文章 page 页面
      */
-    String POST = "post";
-    String PAGE = "page";
+    String MARKDOWN = "markdownEditor";
+    String TINYMCE = "tinymceEditor";
     /**
      * 分类和标签
      */
