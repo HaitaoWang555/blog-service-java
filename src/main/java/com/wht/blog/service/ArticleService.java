@@ -1,6 +1,5 @@
 package com.wht.blog.service;
 
-import com.github.pagehelper.Page;
 import com.wht.blog.dao.ArticleMapper;
 import com.wht.blog.dto.Archives;
 import com.wht.blog.entity.Article;
@@ -68,14 +67,13 @@ public class ArticleService {
             this.saveLog(ids.get("ids"));
         }
     }
-    public int getCommentCount (int id) {
-        Article article = articleMapper.getCommentCount(id);
-        return article.getCommentCount();
-    }
+
     private void transformPreView(Article article) {
         String content = article.getContent();
+        content =Method.delHTMLTag(content);
         Integer maxLen = Const.MAX_PREVIEW_COUNT;
-        content =Method.delHTMLTag(content).substring(0, maxLen).concat(" ......");
+        Integer newLen = content.length() > maxLen ? maxLen : content.length();
+        content =content.substring(0, newLen).concat(" ......");
         article.setContent(content);
     }
 

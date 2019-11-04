@@ -47,7 +47,7 @@
         <include refid="Base_Column_List"/>
         ,
         <include refid="Blob_Column_List"/>
-        from article
+        from article where status = "publish"
     </select>
     <select id="getAll" resultMap="BaseResultMap">
         select
