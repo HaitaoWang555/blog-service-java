@@ -11,8 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * @author wht
@@ -33,13 +31,8 @@ public class UploadController extends BaseController{
         String realPath =  Method.createFilePath("article");
         File dir =  new File(realPath);
 
-        boolean filePathHave = true;
         if(!dir.isDirectory()){
-            filePathHave = dir.mkdirs();
-        }
-        if (!filePathHave) {
-            log.error("【创建文件目录】失败, 绝对路径：{}", realPath);
-            return RestResponse.fail("文件上传失败");
+            dir.mkdirs();
         }
 
         String fileName = file.getOriginalFilename();

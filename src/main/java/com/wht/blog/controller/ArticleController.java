@@ -36,6 +36,8 @@ import javax.xml.transform.stream.StreamResult;
 import javax.annotation.Resource;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -102,18 +104,25 @@ public class ArticleController extends BaseController{
             @RequestParam(value = "category", required = false) String category,
             @RequestParam(value = "status", required = false) String status,
             @RequestParam(value = "type", required = false) String type,
-            @RequestParam(value = "allowComment", required = false) Boolean allowComment
-    ) {
+            @RequestParam(value = "allowComment", required = false) Boolean allowComment,
+            @RequestParam(value = "updatedAt", required = false) String updatedAt
+    ) throws ParseException {
         Article article = new Article();
         article.setId(id);
         article.setTitle(title);
-        article.setContent(content);
+        // 只有文章内容改变才更改更新时间
+        if (StringUtils.isNotBlank(content)) {
+            article.setContent(content);
+        } else {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+            Date date = sdf.parse(updatedAt);
+            article.setUpdatedAt(date);
+        }
         article.setTags(tags);
         article.setCategory(category);
         article.setStatus(status);
         article.setType(type);
         article.setAllowComment(allowComment);
-        article.setUpdatedAt(new Date());
 
         int update = articleService.updateByPrimaryKeySelective(article);
         if (update != 0) {
