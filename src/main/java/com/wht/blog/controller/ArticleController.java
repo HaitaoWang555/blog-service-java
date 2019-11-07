@@ -14,6 +14,8 @@ import com.wht.blog.util.Types;
 import fr.opensagres.poi.xwpf.converter.core.ImageManager;
 import fr.opensagres.poi.xwpf.converter.xhtml.XHTMLConverter;
 import fr.opensagres.poi.xwpf.converter.xhtml.XHTMLOptions;
+import net.coobird.thumbnailator.Thumbnails;
+import net.coobird.thumbnailator.name.Rename;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.springframework.web.bind.annotation.*;
@@ -221,6 +223,10 @@ public class ArticleController extends BaseController{
         transformer.transform(
                 domSource,
                 new StreamResult( stringWriter ) );
+
+        // 压缩图片
+        imgThumbnail(imagePathStr);
+
         return stringWriter.toString();
     }
 
@@ -238,6 +244,35 @@ public class ArticleController extends BaseController{
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         XHTMLConverter.getInstance().convert(document, byteArrayOutputStream, options);
 
+        // 压缩图片
+        imgThumbnail(imagePathStr);
         return byteArrayOutputStream.toString();
     }
+
+    private void imgThumbnail(String path) throws IOException {
+        File file = new File(path);
+        String [] fileName = file.list();
+        String thumbnailPath = path.concat("thumbnail/");
+        File thumbnailDir =  new File(thumbnailPath);
+        if(!thumbnailDir.isDirectory()){
+            thumbnailDir.mkdirs();
+        }
+        assert fileName != null;
+        List<String> needThumbnailFileName = new ArrayList<>();
+        for (String f : fileName) {
+            String imagePath = path.concat(f);
+            needThumbnailFileName.add(imagePath);
+        }
+        String [] needThumbnailFileNames = new String[needThumbnailFileName.size()];
+        toThumbnail(thumbnailDir, needThumbnailFileName.toArray(needThumbnailFileNames));
+    }
+
+    private void toThumbnail(File filePath, String... files) throws IOException {
+        Thumbnails.of(files)
+                .scale(1)
+                .outputFormat("jpg")
+                .outputQuality(0.5)
+                .toFiles(filePath, Rename.NO_CHANGE);
+    }
+
 }
