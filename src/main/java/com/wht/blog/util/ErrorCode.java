@@ -52,7 +52,26 @@ public enum ErrorCode {
     /**
      * 用户未登陆
      */
-    NOT_LOGIN(999, "Not Login");
+    NOT_LOGIN(999, "Not Login"),
+    /**
+     * 用户名或密码错误！
+     */
+    USERNAME_PASSWORD_ERROR(5001, "用户名或密码错误！"),
+
+    /**
+     * token 已过期，请重新登录！
+     */
+    TOKEN_EXPIRED(5002, "token 已过期，请重新登录！"),
+
+    /**
+     * token 解析失败，请尝试重新登录！
+     */
+    TOKEN_PARSE_ERROR(5002, "token 解析失败，请尝试重新登录！"),
+
+    /**
+     * 当前用户已在别处登录，请尝试更改密码或重新登录！
+     */
+    TOKEN_OUT_OF_CTRL(5003, "当前用户已在别处登录，请尝试更改密码或重新登录！");
 
     private final int code;
     private final String msg;
