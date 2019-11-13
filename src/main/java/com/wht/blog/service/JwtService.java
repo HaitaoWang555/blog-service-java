@@ -1,39 +1,48 @@
-package com.wht.blog.util;
+package com.wht.blog.service;
 
 import com.wht.blog.exception.TipException;
+import com.wht.blog.util.Const;
+import com.wht.blog.util.ErrorCode;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @author wht
  * @since 2019-11-12 16:53
  */
 @Slf4j
-public class JwtUtil {
+@Service
+public class JwtService {
 
     @Resource
-    private static StringRedisTemplate stringRedisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
+    @Value("${jwt.config.key}")
+    private String key;
+    @Value("${jwt.config.ttl}")
+    private String configTtl;
 
     /**
      * 创建 jwt
      * @param userId userId
      * @return jwt
      */
-    private String createJWT (Integer userId) {
+    public String createJWT (Integer userId) {
+
         Date now = new Date();
         String id = userId.toString();
         JwtBuilder builder = Jwts.builder()
                 .setId(id)
                 .setIssuedAt(now)
-                .signWith(SignatureAlgorithm.HS256, "xkcodingsfdgsdg");
-        Long ttl = 120000L;
+                .signWith(SignatureAlgorithm.HS256, key);
+        Integer ttl = Integer.valueOf(configTtl);
         builder.setExpiration(new Date(now.getTime() + ttl));
         String jwt = builder.compact();
         // 将生成的JWT保存至Redis
@@ -47,10 +56,10 @@ public class JwtUtil {
      * @param jwt String
      * @return Claims jwt
      */
-    private static Claims parseJWT(String jwt) {
+    private Claims parseJWT(String jwt) {
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey("xkcodingsfdgsdg")
+                    .setSigningKey(key)
                     .parseClaimsJws(jwt)
                     .getBody();
 
@@ -92,32 +101,19 @@ public class JwtUtil {
      * @param jwt String
      * @return userId Integer
      */
-    public static Integer getLoginUserId(String jwt) {
+    public Integer getLoginUserId(String jwt) {
         Claims claims = parseJWT(jwt);
         return Integer.valueOf(claims.getId());
     }
 
     /**
      * 设置JWT过期
-     * @param jwt String
+     * @param userId String
      * @return 是否清除 Boolean
      */
-    public Boolean invalidateJWT(String jwt) {
-        String userId = getLoginUserId(jwt).toString();
+    public Boolean invalidateJWT(String userId) {
         // 从redis中清除JWT
         String redisKey = Const.REDIS_JWT_KEY_PREFIX + userId;
         return stringRedisTemplate.delete(redisKey);
-    }
-    /**
-     * 从 request 的 header 中获取 JWT
-     * @param request 请求
-     * @return JWT
-     */
-    public String getJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.isNotBlank(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
     }
 }

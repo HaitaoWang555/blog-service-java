@@ -37,8 +37,8 @@ public class GlobalExceptionHandler {
      * @return {@link RestResponse}
      */
     @ExceptionHandler(value = TipException.class)
-    public RestResponse tipErrorHandler(HttpServletRequest req, Exception e) {
-        return RestResponse.fail(e.getMessage());
+    public RestResponse tipErrorHandler(HttpServletRequest req, TipException e) {
+        return RestResponse.fail(e.getCode(), e.getMessage());
     }
 
     /**

@@ -1,15 +1,15 @@
 package com.wht.blog.util;
 
 import com.wht.blog.entity.User;
+import com.wht.blog.service.JwtService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -22,38 +22,25 @@ import java.util.regex.Pattern;
  * @since 2019-09-22 17:22
  */
 public class Method {
+    @Resource
+    private static JwtService jwtService;
+
     /**
-     * 获取session中的users对象
-     *
-     * @return session中的用户
+     * 从 request 的 header 中获取 JWT
+     * @param request 请求
+     * @return JWT
      */
-    public static User getLoginUser() {
-        HttpSession session = getSession();
-        if (null == session) {
-            return null;
+    public static String getJwtFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.isNotBlank(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
         }
-        return (User) session.getAttribute(Const.USER_SESSION_KEY);
+        return null;
     }
+
     public static Integer getLoginUserId() {
-        Integer userId = 0;
-        User user = getLoginUser();
-        if (user != null) {
-            userId = user.getId();
-        }
-        return userId;
-    }
-    /**
-     * 获取session
-     *
-     * @return {@link HttpSession}
-     */
-    private static HttpSession getSession() {
-        HttpSession session = null;
-        try {
-            session = getRequest().getSession();
-        } catch (Exception ignored) {
-        }
-        return session;
+        String jwt = getJwtFromRequest(getRequest());
+        return jwtService.getLoginUserId(jwt);
     }
 
     /**

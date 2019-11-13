@@ -1,8 +1,8 @@
 package com.wht.blog.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wht.blog.entity.User;
 import com.wht.blog.util.ErrorCode;
+import com.wht.blog.service.JwtService;
 import com.wht.blog.util.Method;
 import com.wht.blog.util.RestResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
@@ -23,6 +24,8 @@ import java.io.PrintWriter;
 @Slf4j
 @Component
 public class AdminInterceptor implements HandlerInterceptor {
+    @Resource
+    private JwtService jwtService;
     private static final String AUTH_URIS = "/manage";
 
     private static final String[] IGNORE_URIS = {"/manage/user/login", "/manage/user/logout","/manage/user/register"};
@@ -44,8 +47,9 @@ public class AdminInterceptor implements HandlerInterceptor {
             }
             //登录拦截
             if (auth) {
-                User user = Method.getLoginUser();
-                if (null == user) {
+                String jwt = Method.getJwtFromRequest(request);
+                Integer userId = jwtService.getLoginUserId(jwt);
+                if (null == userId) {
                     // 要设置跨域，不然输出信息没有
                     if (request.getHeader(HttpHeaders.ORIGIN) != null) {
                         response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, request.getHeader(HttpHeaders.ORIGIN));
