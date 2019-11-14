@@ -8,10 +8,7 @@ import com.wht.blog.dto.Pagination;
 import com.wht.blog.entity.Article;
 import com.wht.blog.entity.Comment;
 import com.wht.blog.entity.User;
-import com.wht.blog.service.ArticleService;
-import com.wht.blog.service.CommentService;
-import com.wht.blog.service.MetaService;
-import com.wht.blog.service.UsersService;
+import com.wht.blog.service.*;
 import com.wht.blog.util.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +34,8 @@ public class PortalController extends BaseController{
     private CommentService commentService;
     @Resource
     private UsersService usersService;
+    @Resource
+    private JwtService jwtService;
 
     @GetMapping("/article/list")
     public RestResponse home(
@@ -95,11 +94,11 @@ public class PortalController extends BaseController{
             @RequestParam(value = "parent_id", required = false) Integer parent_id,
             @RequestParam(value = "reply_user_id", required = false) Integer reply_user_id
     ) {
-        User user = this.user();
-        if (null == user) {
+        Integer user_id = this.getLoginUserId();
+        if (null == user_id) {
             return RestResponse.fail(ErrorCode.NOT_LOGIN.getCode(),"请登陆");
         } else {
-            Comment comment = this.insertComment(article_id, content, parent_id, reply_user_id, user);
+            Comment comment = this.insertComment(article_id, content, parent_id, reply_user_id, user_id);
             if (parent_id != null) {
                 this.upDateParentComment(parent_id);
             }
@@ -110,13 +109,18 @@ public class PortalController extends BaseController{
     @PostMapping("/user/login")
     public RestResponse login(@RequestParam String username, @RequestParam String password) {
         User user = usersService.login(username, password);
-        request.getSession().setAttribute(Const.USER_SESSION_KEY, user);
-        return RestResponse.ok(user,"登录成功" );
+        String jwt = jwtService.createJWT(user.getId());
+        return RestResponse.ok(jwt,"登录成功" );
     }
     @PostMapping("/user/logout")
     public RestResponse logout() {
-        request.getSession().setAttribute(Const.USER_SESSION_KEY, null);
-        return RestResponse.ok("退出成功" );
+        Integer user_id = this.getLoginUserId();
+        if (null == user_id) {
+            return RestResponse.fail("没有用户登陆");
+        }
+
+        Boolean clear = jwtService.invalidateJWT(user_id.toString());
+        return clear ? RestResponse.ok("退出成功") : RestResponse.fail("退出失败");
     }
     @PostMapping("/user/register")
     public RestResponse addUser(
@@ -130,7 +134,7 @@ public class PortalController extends BaseController{
         this.login(username, password);
         return RestResponse.ok(user,"注册成功并登录");
     }
-    private Comment insertComment(Integer article_id, String content, Integer parent_id, Integer reply_user_id, User user) {
+    private Comment insertComment(Integer article_id, String content, Integer parent_id, Integer reply_user_id, Integer user_id) {
         Comment comment = new Comment();
         comment.setArticleId(article_id);
         comment.setContent(content);
@@ -140,7 +144,7 @@ public class PortalController extends BaseController{
         comment.setIp(Ip);
         String agent = Method.getAgent();
         comment.setAgent(agent);
-        comment.setUserId(user.getId());
+        comment.setUserId(user_id);
         comment.setCreated(new Date());
         commentService.add(comment);
         return comment;

@@ -20,6 +20,10 @@ public interface Const {
      */
     String MD5_SLAT = "sds23dfg3d5453456345sdf2";
     /**
+     * JWT 在 Redis 中保存的key前缀
+     */
+    String REDIS_JWT_KEY_PREFIX = "security:jwt:";
+    /**
      * 默认预览字数
      */
     Integer MAX_PREVIEW_COUNT = 150;

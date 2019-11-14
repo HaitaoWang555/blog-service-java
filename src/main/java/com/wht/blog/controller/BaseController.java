@@ -1,6 +1,6 @@
 package com.wht.blog.controller;
 
-import com.wht.blog.entity.User;
+import com.wht.blog.service.JwtService;
 import com.wht.blog.util.Method;
 
 import javax.annotation.Resource;
@@ -14,8 +14,11 @@ import javax.servlet.http.HttpServletRequest;
 public abstract class BaseController {
     @Resource
     protected HttpServletRequest request;
+    @Resource
+    private JwtService jwtService;
 
-    public User user() {
-        return Method.getLoginUser();
+    Integer getLoginUserId() {
+        String jwt = Method.getJwtFromRequest(request);
+        return jwtService.getLoginUserId(jwt);
     }
 }

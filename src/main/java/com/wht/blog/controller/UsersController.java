@@ -2,7 +2,7 @@ package com.wht.blog.controller;
 
 import com.wht.blog.entity.User;
 import com.wht.blog.service.UsersService;
-import com.wht.blog.util.Const;
+import com.wht.blog.service.JwtService;
 import com.wht.blog.util.Method;
 import com.wht.blog.util.RestResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -22,23 +22,25 @@ import java.util.Map;
 public class UsersController extends BaseController {
     @Resource
     private UsersService usersService;
+    @Resource
+    private JwtService jwtService;
 
     @PostMapping("login")
     public RestResponse login(@RequestParam String username, @RequestParam String password) {
         User user = usersService.login(username, password);
-        request.getSession().setAttribute(Const.USER_SESSION_KEY, user);
 
-        return RestResponse.ok(user,"登录成功" );
+        String jwt = jwtService.createJWT(user.getId());
+        return RestResponse.ok(jwt,"登录成功" );
     }
     @PostMapping("logout")
     public RestResponse logout() {
-        User user = this.user();
-        if (null == user) {
+        Integer user_id = this.getLoginUserId();
+        if (null == user_id) {
             return RestResponse.fail("没有用户登陆");
         }
 
-        request.getSession().removeAttribute(Const.USER_SESSION_KEY);
-        return RestResponse.ok("退出成功");
+        Boolean clear = jwtService.invalidateJWT(user_id.toString());
+        return clear ? RestResponse.ok("退出成功") : RestResponse.fail("退出失败");
     }
     @GetMapping("/list")
     public RestResponse getAllUser() {
@@ -47,7 +49,7 @@ public class UsersController extends BaseController {
 
     @GetMapping("/getOneById")
     public RestResponse getOneById() {
-        int id = this.user().getId();
+        Integer id = this.getLoginUserId();
         return RestResponse.ok(usersService.getOneById(id));
     }
 
