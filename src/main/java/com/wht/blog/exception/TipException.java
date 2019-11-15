@@ -24,6 +24,7 @@ public class TipException extends RuntimeException{
     }
     public TipException(String message) {
         super(message);
+        this.message = message;
     }
 
     public TipException(String message, Throwable cause) {

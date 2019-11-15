@@ -9,9 +9,11 @@
     <result column="screen_name" property="screenName" jdbcType="VARCHAR" />
     <result column="created" property="created" jdbcType="TIMESTAMP" />
     <result column="logged" property="logged" jdbcType="TIMESTAMP" />
+    <result column="permission" property="permission" jdbcType="LONGVARCHAR"/>
+    <result column="status" property="status" jdbcType="INTEGER" />
   </resultMap>
   <sql id="Base_Column_List" >
-    id, username, email, screen_name, created, logged
+    id, username, email, screen_name, created, logged, permission, status
   </sql>
   <sql id="Password_List" >
     password_md5
@@ -42,10 +44,10 @@
   <insert id="insert" parameterType="com.wht.blog.entity.User" >
     insert into yonghu (id, username, password_md5, 
       email, screen_name, created, 
-      logged)
+      logged, permission, status)
     values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{passwordMd5,jdbcType=VARCHAR}, 
       #{email,jdbcType=VARCHAR}, #{screenName,jdbcType=VARCHAR}, #{created,jdbcType=TIMESTAMP}, 
-      #{logged,jdbcType=TIMESTAMP})
+      #{logged,jdbcType=TIMESTAMP}, #{permission,jdbcType=LONGVARCHAR}, #{status,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.wht.blog.entity.User" useGeneratedKeys="true" keyProperty="id">
     insert into yonghu
@@ -71,6 +73,12 @@
       <if test="logged != null" >
         logged,
       </if>
+      <if test="permission != null" >
+        permission,
+      </if>
+      <if test="status != null" >
+          status,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -93,6 +101,12 @@
       </if>
       <if test="logged != null" >
         #{logged,jdbcType=TIMESTAMP},
+      </if>
+      <if test="permission != null" >
+        #{permission,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
       </if>
     </trim>
   </insert>
@@ -117,6 +131,12 @@
       <if test="logged != null" >
         logged = #{logged,jdbcType=TIMESTAMP},
       </if>
+      <if test="permission != null" >
+          permission = #{permission,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="status != null" >
+          status = #{status,jdbcType=INTEGER},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -127,7 +147,9 @@
       email = #{email,jdbcType=VARCHAR},
       screen_name = #{screenName,jdbcType=VARCHAR},
       created = #{created,jdbcType=TIMESTAMP},
-      logged = #{logged,jdbcType=TIMESTAMP}
+      logged = #{logged,jdbcType=TIMESTAMP},
+      permission = #{permission,jdbcType=LONGVARCHAR},
+      status = #{status,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>
 </mapper>

@@ -1,8 +1,12 @@
 package com.wht.blog.controller;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.wht.blog.dto.Pagination;
 import com.wht.blog.entity.User;
 import com.wht.blog.service.UsersService;
 import com.wht.blog.service.JwtService;
+import com.wht.blog.util.Const;
 import com.wht.blog.util.Method;
 import com.wht.blog.util.RestResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -28,9 +32,17 @@ public class UsersController extends BaseController {
     @PostMapping("login")
     public RestResponse login(@RequestParam String username, @RequestParam String password) {
         User user = usersService.login(username, password);
-
-        String jwt = jwtService.createJWT(user.getId());
-        return RestResponse.ok(jwt,"登录成功" );
+        switch (user.getStatus()) {
+            case 0:
+                return RestResponse.fail("您已被禁止登陆" );
+            case 1:
+                String jwt = jwtService.createJWT(user.getId());
+                return RestResponse.ok(jwt,"登录成功" );
+            case 2:
+                return RestResponse.fail("您不是管理人员" );
+            default:
+                return RestResponse.fail("登陆失败" );
+        }
     }
     @PostMapping("logout")
     public RestResponse logout() {
@@ -46,7 +58,17 @@ public class UsersController extends BaseController {
     public RestResponse getAllUser() {
         return RestResponse.ok(usersService.getAllUser());
     }
-
+    @GetMapping("/page")
+    public RestResponse getAllUser(
+            @RequestParam(value = "page", required = false, defaultValue = "1") Integer page,
+            @RequestParam(value = "pageSize", required = false, defaultValue = Const.PAGE_SIZE) Integer limit
+    ) {
+        String sortBy = "created desc";
+        Page<User> userList = PageHelper.startPage(page, limit, sortBy).doSelectPage(() ->
+                usersService.getAllUser()
+        );
+        return RestResponse.ok(new Pagination<User>(userList));
+    }
     @GetMapping("/getOneById")
     public RestResponse getOneById() {
         Integer id = this.getLoginUserId();
@@ -54,18 +76,37 @@ public class UsersController extends BaseController {
     }
 
     @PostMapping("/register")
+    public RestResponse register(
+            @RequestParam(value = "username") String username,
+            @RequestParam(value = "password") String password,
+            @RequestParam(value = "email") String email,
+            @RequestParam(value = "screenName", required = false) String screen_name
+    ) {
+        User user = Method.addUser(username, email, screen_name, password);
+        usersService.addUser(user);
+        this.login(username, password);
+        return RestResponse.ok("注册成功并登录");
+    }
+    @PostMapping("/addUser")
     public RestResponse addUser(
             @RequestParam(value = "username") String username,
             @RequestParam(value = "password") String password,
             @RequestParam(value = "email") String email,
             @RequestParam(value = "screenName", required = false) String screen_name
     ) {
-        User user = Method.addUser(username, password, email, screen_name);
+        User user = Method.addUser(username, email, screen_name, password);
         usersService.addUser(user);
-        this.login(username, password);
-        return RestResponse.ok("注册成功并登录");
+        return RestResponse.ok("添加成功");
     }
-
+    @PostMapping("/haveUserName")
+    public RestResponse haveUserName(@RequestParam(value = "username") String username) {
+        Boolean haveUserName = usersService.haveUserName(username);
+        if (!haveUserName) {
+            return RestResponse.ok("名称已占用");
+        } else {
+            return RestResponse.ok();
+        }
+    }
     @PostMapping("/updateUser")
     public RestResponse updateUser(
             @RequestParam(value = "id") Integer id,

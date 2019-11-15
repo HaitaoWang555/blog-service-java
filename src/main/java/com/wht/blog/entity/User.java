@@ -19,5 +19,6 @@ public class User {
     private Date created;
 
     private Date logged;
-
+    private String permission;
+    private Integer status;
 }

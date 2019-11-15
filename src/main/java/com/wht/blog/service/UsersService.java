@@ -22,6 +22,8 @@ public class UsersService {
     private UserMapper userMapper;
     @Resource
     private LogService logService;
+    @Resource
+    private JwtService jwtService;
 
     public List getAllUser () {
         return userMapper.getAll();
@@ -46,7 +48,11 @@ public class UsersService {
             this.saveLog(ids.get("ids"));
         }
     }
-    
+    public Boolean haveUserName(String username) {
+        User user = userMapper.selectByUsername(username);
+        return user == null;
+    }
+
     public User login(String username, String password) {
         User user = userMapper.selectByUsername(username);
         if (user == null) {
@@ -69,7 +75,7 @@ public class UsersService {
                 Types.LOG_MESSAGE_DELETE_USER,
                 Types.LOG_TYPE_OPERATE,
                 Method.getIp(),
-                Method.getLoginUserId()
+                jwtService.getLoginUserId(Method.getJwt())
         );
     }
     private void saveLog(User user) {
@@ -78,7 +84,7 @@ public class UsersService {
                 Types.LOG_MESSAGE_ADD_USER,
                 Types.LOG_TYPE_OPERATE,
                 Method.getIp(),
-                Method.getLoginUserId()
+                jwtService.getLoginUserId(Method.getJwt())
         );
     }
 }

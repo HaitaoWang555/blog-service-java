@@ -1,14 +1,12 @@
 package com.wht.blog.util;
 
 import com.wht.blog.entity.User;
-import com.wht.blog.service.JwtService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,8 +20,6 @@ import java.util.regex.Pattern;
  * @since 2019-09-22 17:22
  */
 public class Method {
-    @Resource
-    private static JwtService jwtService;
 
     /**
      * 从 request 的 header 中获取 JWT
@@ -38,9 +34,8 @@ public class Method {
         return null;
     }
 
-    public static Integer getLoginUserId() {
-        String jwt = getJwtFromRequest(getRequest());
-        return jwtService.getLoginUserId(jwt);
+    public static String getJwt() {
+        return getJwtFromRequest(getRequest());
     }
 
     /**
@@ -48,7 +43,7 @@ public class Method {
      *
      * @return {@link HttpServletRequest}
      */
-    private static HttpServletRequest getRequest() {
+    public static HttpServletRequest getRequest() {
         ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         return attrs.getRequest();
     }
@@ -135,9 +130,8 @@ public class Method {
      * @param model 模块
      * @return upload - 模块 - 用户ID - 时间 - 文件名
      */
-    public static String createFilePath(String model) {
+    public static String createFilePath(String model, String userId) {
         String fileTempPath = "upload/";
-        String userId = getLoginUserId().toString();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         String format = sdf.format(new Date());
         return fileTempPath + model + "/" + userId + "/" + format + "/";

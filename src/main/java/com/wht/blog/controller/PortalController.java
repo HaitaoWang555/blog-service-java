@@ -134,6 +134,16 @@ public class PortalController extends BaseController{
         this.login(username, password);
         return RestResponse.ok(user,"注册成功并登录");
     }
+    @PostMapping("/user/haveUserName")
+    public RestResponse haveUserName(@RequestParam(value = "username") String username) {
+        Boolean haveUserName = usersService.haveUserName(username);
+        if (haveUserName) {
+            return RestResponse.fail("名称已占用");
+        } else {
+            return RestResponse.ok();
+        }
+    }
+
     private Comment insertComment(Integer article_id, String content, Integer parent_id, Integer reply_user_id, Integer user_id) {
         Comment comment = new Comment();
         comment.setArticleId(article_id);

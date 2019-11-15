@@ -29,7 +29,7 @@ public class UploadController extends BaseController{
             return RestResponse.fail("文件为空");
         }
 
-        String realPath =  Method.createFilePath("article");
+        String realPath =  Method.createFilePath("article", this.getLoginUserId().toString());
         String thumbnail = "thumbnail/";
         File dir =  new File(realPath);
 

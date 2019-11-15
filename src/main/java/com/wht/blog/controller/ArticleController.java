@@ -191,7 +191,7 @@ public class ArticleController extends BaseController{
     }
 
     private String handleDoc(InputStream inputStream) throws IOException, ParserConfigurationException, TransformerException {
-        String imagePathStr = Method.createFilePath("article");
+        String imagePathStr = Method.createFilePath("article", this.getLoginUserId().toString());
         File dir = new File(imagePathStr);
         if(!dir.isDirectory()) dir.mkdirs();
         HWPFDocument wordDocument = new HWPFDocument(inputStream);
@@ -231,7 +231,7 @@ public class ArticleController extends BaseController{
     }
 
     private String handleDocx(InputStream inputStream) throws IOException {
-        String imagePathStr = Method.createFilePath("article");
+        String imagePathStr = Method.createFilePath("article", this.getLoginUserId().toString());
 
         XWPFDocument document = new XWPFDocument(inputStream);
         XHTMLOptions options = XHTMLOptions.create();
