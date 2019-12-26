@@ -79,12 +79,19 @@ public class UsersService {
         );
     }
     private void saveLog(User user) {
+        String JWT = Method.getJwt();
+        int UserId;
+        if (JWT == null) {
+            UserId = 0;
+        } else {
+         UserId = jwtService.getLoginUserId(JWT);
+        }
         logService.save(
                 Types.LOG_ACTION_ADD, "name:" + user.getUsername(),
                 Types.LOG_MESSAGE_ADD_USER,
                 Types.LOG_TYPE_OPERATE,
                 Method.getIp(),
-                jwtService.getLoginUserId(Method.getJwt())
+                UserId
         );
     }
 }
