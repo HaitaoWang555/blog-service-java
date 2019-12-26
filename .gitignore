@@ -33,6 +33,7 @@ build/
 
 ### Log ###
 /logs
+/bash
 /upload/
 /src/main/resources/rebel.xml
 /src/main/resources/application-prod.properties
