@@ -112,6 +112,11 @@ public class PortalController extends BaseController{
         String jwt = jwtService.createJWT(user.getId());
         return RestResponse.ok(jwt,"登录成功" );
     }
+    @GetMapping("/user/getOneById")
+    public RestResponse getOneById() {
+        Integer id = this.getLoginUserId();
+        return RestResponse.ok(usersService.getOneById(id));
+    }
     @PostMapping("/user/logout")
     public RestResponse logout() {
         Integer user_id = this.getLoginUserId();
@@ -129,19 +134,17 @@ public class PortalController extends BaseController{
             @RequestParam(value = "email") String email,
             @RequestParam(value = "screenName", required = false) String screen_name
     ) {
-        User user = Method.addUser(username, email, screen_name, password);
-        usersService.addUser(user);
-        this.login(username, password);
-        return RestResponse.ok(user,"注册成功并登录");
-    }
-    @PostMapping("/user/haveUserName")
-    public RestResponse haveUserName(@RequestParam(value = "username") String username) {
-        Boolean haveUserName = usersService.haveUserName(username);
-        if (haveUserName) {
-            return RestResponse.fail("名称已占用");
+        if (haveUserName(username)) {
+            User user = Method.addUser(username, email, screen_name, password);
+            usersService.addUser(user);
+            this.login(username, password);
+            return RestResponse.ok(user,"注册成功并登录");
         } else {
-            return RestResponse.ok();
+            return RestResponse.fail("名称已占用");
         }
+    }
+    private Boolean haveUserName(String username) {
+        return usersService.haveUserName(username);
     }
 
     private Comment insertComment(Integer article_id, String content, Integer parent_id, Integer reply_user_id, Integer user_id) {
