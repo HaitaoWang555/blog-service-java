@@ -1,5 +1,11 @@
 package com.wht.blog.controller;
 
+import com.vladsch.flexmark.ast.Node;
+import com.vladsch.flexmark.ext.tables.TablesExtension;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.parser.ParserEmulationProfile;
+import com.vladsch.flexmark.util.options.MutableDataSet;
 import com.google.common.base.Joiner;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -169,6 +175,21 @@ public class ArticleController extends BaseController{
         return RestResponse.ok(content,"导入成功");
     }
 
+    @PostMapping("/uploadDir")
+    public RestResponse uploadDir(@RequestParam(required =false, value = "file") MultipartFile[] multipartFiles) throws IOException, TransformerException, ParserConfigurationException {
+        for (MultipartFile file : multipartFiles) {
+            String fileName = file.getOriginalFilename();
+            InputStream inputStream = file.getInputStream();
+            String suffix = fileName.substring(fileName.indexOf(".") + 1);
+            String content = suffix(suffix, inputStream);
+            try {
+                this.insert(fileName, content, "", "", "draft", "markdownEditor", false);
+            } catch (Exception e) {
+                System.out.println("import fileName error;" + e.getMessage());
+            }
+        }
+        return RestResponse.ok("导入成功");
+    }
     private void insert(String title, String content, String tags, String category, String status, String type, Boolean allowComment) {
         Article article = new Article();
         article.setTitle(title);
@@ -275,4 +296,35 @@ public class ArticleController extends BaseController{
                 .toFiles(filePath, Rename.NO_CHANGE);
     }
 
+    private String suffix(String suffix, InputStream inputStream) throws ParserConfigurationException, TransformerException, IOException {
+        String content = "";
+        switch (suffix.toLowerCase()) {
+            case "md":
+                content = mdToHtml(handleMd(inputStream));
+                break;
+            case "doc":
+                content = handleDoc(inputStream);
+                break;
+            case "docx":
+                content = handleDocx(inputStream);
+                break;
+            default:
+        }
+        return content;
+    }
+
+    private static final MutableDataSet MARKDOWN_OPTIONS = new MutableDataSet();
+    static {
+        MARKDOWN_OPTIONS.setFrom(ParserEmulationProfile.MARKDOWN);
+        MARKDOWN_OPTIONS.set(Parser.EXTENSIONS, Collections.singletonList(TablesExtension.create()));
+    }
+    private static final Parser PARSER = Parser.builder(MARKDOWN_OPTIONS).build();
+    private static final HtmlRenderer HTML_RENDER = HtmlRenderer.builder(MARKDOWN_OPTIONS).build();
+    private static String mdToHtml(String md) {
+        if (StringUtils.isEmpty(md)) {
+            return "";
+        }
+        Node document = PARSER.parse(md);
+        return HTML_RENDER.render(document);
+    }
 }
