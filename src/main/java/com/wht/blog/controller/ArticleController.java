@@ -1,11 +1,5 @@
 package com.wht.blog.controller;
 
-import com.vladsch.flexmark.ast.Node;
-import com.vladsch.flexmark.ext.tables.TablesExtension;
-import com.vladsch.flexmark.html.HtmlRenderer;
-import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.parser.ParserEmulationProfile;
-import com.vladsch.flexmark.util.options.MutableDataSet;
 import com.google.common.base.Joiner;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
@@ -20,6 +14,7 @@ import com.wht.blog.util.Types;
 import fr.opensagres.poi.xwpf.converter.core.ImageManager;
 import fr.opensagres.poi.xwpf.converter.xhtml.XHTMLConverter;
 import fr.opensagres.poi.xwpf.converter.xhtml.XHTMLOptions;
+import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import net.coobird.thumbnailator.name.Rename;
 import org.apache.commons.lang3.StringUtils;
@@ -53,6 +48,7 @@ import java.util.stream.Collectors;
  * @author wht
  * @since 2019-09-19 15:03
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/manage/article")
 public class ArticleController extends BaseController{
@@ -158,19 +154,9 @@ public class ArticleController extends BaseController{
         InputStream inputStream = file.getInputStream();
         assert fileName != null;
         String suffix = fileName.substring(fileName.indexOf(".") + 1);
-        String content;
-        switch (suffix.toLowerCase()) {
-            case "md":
-                content = handleMd(inputStream);
-                break;
-            case "doc":
-                content = handleDoc(inputStream);
-                break;
-            case "docx":
-                content = handleDocx(inputStream);
-                break;
-            default:
-                return RestResponse.fail("格式不正确");
+        String content = suffix(suffix, inputStream);
+        if (content.equals("")) {
+            return RestResponse.fail("格式不正确");
         }
         return RestResponse.ok(content,"导入成功");
     }
@@ -182,10 +168,17 @@ public class ArticleController extends BaseController{
             InputStream inputStream = file.getInputStream();
             String suffix = fileName.substring(fileName.indexOf(".") + 1);
             String content = suffix(suffix, inputStream);
+            if (content.equals("")) break;
+            String type;
+            if (suffix.equals("md")) {
+                type = Types.MARKDOWN;
+            } else {
+                type = Types.TINYMCE;
+            }
             try {
-                this.insert(fileName, content, "", "", "draft", "markdownEditor", false);
+                this.insert(fileName, content, "", "", Types.DRAFT, type, false);
             } catch (Exception e) {
-                System.out.println("import fileName error;" + e.getMessage());
+                log.error(" ERROR: {}",  e.getMessage());
             }
         }
         return RestResponse.ok("导入成功");
@@ -300,7 +293,7 @@ public class ArticleController extends BaseController{
         String content = "";
         switch (suffix.toLowerCase()) {
             case "md":
-                content = mdToHtml(handleMd(inputStream));
+                content = handleMd(inputStream);
                 break;
             case "doc":
                 content = handleDoc(inputStream);
@@ -313,18 +306,4 @@ public class ArticleController extends BaseController{
         return content;
     }
 
-    private static final MutableDataSet MARKDOWN_OPTIONS = new MutableDataSet();
-    static {
-        MARKDOWN_OPTIONS.setFrom(ParserEmulationProfile.MARKDOWN);
-        MARKDOWN_OPTIONS.set(Parser.EXTENSIONS, Collections.singletonList(TablesExtension.create()));
-    }
-    private static final Parser PARSER = Parser.builder(MARKDOWN_OPTIONS).build();
-    private static final HtmlRenderer HTML_RENDER = HtmlRenderer.builder(MARKDOWN_OPTIONS).build();
-    private static String mdToHtml(String md) {
-        if (StringUtils.isEmpty(md)) {
-            return "";
-        }
-        Node document = PARSER.parse(md);
-        return HTML_RENDER.render(document);
-    }
 }
